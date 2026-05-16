@@ -1,11 +1,12 @@
 package com.opscore.enums;
 
-public enum IncidentStatus {
-    OPEN,
+public enum IncidentAction {
+    CREATED,
     ASSIGNED,
-    IN_PROGRESS,
-    ON_HOLD,
     RESOLVED,
+    COMMENTED,
+    STATUS_CHANGED,
     CLOSED,
     CANCELED
 }
+
