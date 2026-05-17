@@ -5,6 +5,7 @@ import com.opscore.dto.incident.IncidentRequestDTO;
 import com.opscore.dto.incident.IncidentResponseDTO;
 import com.opscore.entity.Assignment;
 import com.opscore.entity.Incident;
+import com.opscore.enums.Category;
 import com.opscore.enums.IncidentStatus;
 import com.opscore.exception.BadRequestException;
 import com.opscore.exception.ResourceNotFoundException;
@@ -40,7 +41,10 @@ public class IncidentServiceImpl implements IncidentService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .priority(request.getPriority())
-                .category(request.getCategory())
+                //.category(request.getCategory())
+                .category( request.getCategory() != null
+                        ? request.getCategory().name()
+                        : null                )
                 .status(IncidentStatus.OPEN)
                 .resolvedAt(null)
                 .build();
@@ -59,7 +63,11 @@ public class IncidentServiceImpl implements IncidentService {
         dto.setDescription(incident.getDescription());
         dto.setStatus(incident.getStatus());
         dto.setPriority(incident.getPriority());
-        dto.setCategory(incident.getCategory());
+        //dto.setCategory(incident.getCategory());
+        dto.setCategory(incident.getCategory() != null
+                ? Category.valueOf(incident.getCategory())
+                : null
+        );
         dto.setCreatedAt(incident.getCreatedAt());
         dto.setResolvedAt(incident.getResolvedAt());
 
