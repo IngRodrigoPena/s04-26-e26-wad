@@ -1,12 +1,15 @@
 package com.opscore.enums;
 
 public enum IncidentAction {
+
     CREATED,
     ASSIGNED,
-    RESOLVED,
-    COMMENTED,
+    REASSIGNED,
     STATUS_CHANGED,
+    COMMENT_ADDED,
+    RESOLVED,
     CLOSED,
     CANCELED
 }
+
 
