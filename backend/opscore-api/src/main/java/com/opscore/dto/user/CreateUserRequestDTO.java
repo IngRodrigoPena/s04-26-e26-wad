@@ -1,6 +1,6 @@
 package com.opscore.dto.user;
 
-import com.opscore.enums.Role;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -9,12 +9,23 @@ import lombok.Data;
 public class CreateUserRequestDTO {
 
     @NotBlank
-    private String username;
+    private String firstName;
+
+    @NotBlank
+    private String lastName;
+
+    @Email
+    @NotBlank
+    private String email;
 
     @NotBlank
     private String password;
 
     @NotNull
-    private Role role;
+    private Long roleId;
+
+    private Long areaId;
+
+    private String avatar;
 }
 

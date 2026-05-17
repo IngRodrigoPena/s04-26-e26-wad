@@ -50,7 +50,7 @@ public class AssignmentService {
         assignment.setIncident(incident);
         assignment.setAssignedTo(request.getAssignedTo());
         // 🔥 Simulación de usuario actual
-        assignment.setAssignedBy(SecurityUtils.getCurrentUsername());
+        assignment.setAssignedBy(SecurityUtils.getCurrentUserEmail());
 
         // 4. Guardar assignment
         assignmentRepository.save(assignment);
@@ -58,7 +58,7 @@ public class AssignmentService {
         // 5. Cambiar estado del incidente
         incident.setStatus(IncidentStatus.IN_PROGRESS);
         //quien cambio el estado
-        incident.setUpdatedBy(SecurityUtils.getCurrentUsername());
+        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
 
         incidentRepository.save(incident);
     }

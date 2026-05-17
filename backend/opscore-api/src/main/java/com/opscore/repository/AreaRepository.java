@@ -7,7 +7,6 @@ import com.opscore.entity.Area;
 public interface AreaRepository extends JpaRepository<Area, Long> {
 
     Optional<Area> findByName(String name);
-
     boolean existsByName(String name);
 }
 

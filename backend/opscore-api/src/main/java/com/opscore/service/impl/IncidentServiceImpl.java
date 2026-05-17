@@ -125,9 +125,9 @@ public class IncidentServiceImpl implements IncidentService {
 
         incident.setResolvedAt(LocalDateTime.now());
 
-        incident.setResolvedBy(SecurityUtils.getCurrentUsername());
+        incident.setResolvedBy(SecurityUtils.getCurrentUserEmail());
 
-        incident.setUpdatedBy(SecurityUtils.getCurrentUsername());
+        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
 
         incidentRepository.save(incident);
     }
