@@ -186,8 +186,10 @@ public class IncidentServiceImpl implements IncidentService {
         // 3. Mapear a DTO
         return assignments.stream()
                 .map(a -> new AssignmentResponseDTO(
-                        a.getAssignedTo(),
-                        a.getAssignedBy(),
+                        a.getAssignedTo().getId(),
+                        a.getAssignedTo().getFirstName(),
+                        a.getAssignedBy().getId(),
+                        a.getAssignedBy().getFirstName(),
                         a.getAssignedAt()
                 ))
                 .toList();

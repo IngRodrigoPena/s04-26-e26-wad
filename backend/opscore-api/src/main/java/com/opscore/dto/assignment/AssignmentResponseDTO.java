@@ -1,21 +1,18 @@
 package com.opscore.dto.assignment;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@AllArgsConstructor
 public class AssignmentResponseDTO {
-
-    private String assignedTo;
-    private String assignedBy;
+    private Long assignedToId;
+    private String assignedToName;
+    private Long assignedById;
+    private String assignedByName;
     private LocalDateTime assignedAt;
-
-    public AssignmentResponseDTO(String assignedTo, String assignedBy, LocalDateTime assignedAt) {
-        this.assignedTo = assignedTo;
-        this.assignedBy = assignedBy;
-        this.assignedAt = assignedAt;
-    }
-
-    public String getAssignedTo() { return assignedTo; }
-    public String getAssignedBy() { return assignedBy; }
-    public LocalDateTime getAssignedAt() { return assignedAt; }
 }
 

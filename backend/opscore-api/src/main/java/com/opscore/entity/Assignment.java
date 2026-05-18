@@ -1,5 +1,6 @@
 package com.opscore.entity;
 
+import com.opscore.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,12 +23,14 @@ public class Assignment {
     private Incident incident;
 
     // Quién recibe
-    @Column(nullable = false)
-    private String assignedTo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_to", nullable = false)
+    private User assignedTo;
 
     // Quién asigna
-    @Column(nullable = false)
-    private String assignedBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_by", nullable = false)
+    private User assignedBy;
 
     // Cuándo se asigna
     @Column(nullable = false)
