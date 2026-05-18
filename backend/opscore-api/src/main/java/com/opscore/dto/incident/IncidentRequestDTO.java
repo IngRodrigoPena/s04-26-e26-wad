@@ -2,6 +2,7 @@ package com.opscore.dto.incident;
 
 import com.opscore.enums.Category;
 import com.opscore.enums.Priority;
+import com.opscore.enums.IncidentType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -18,10 +19,24 @@ public class IncidentRequestDTO {
     @Size(min = 10,max = 500, message = "Description must be less than 500 characters")
     private String description;
 
+    @NotNull(message = "Type is required")
+    private IncidentType type;
+
     @NotNull(message = "Priority is required")
     private Priority priority;
 
-    @NotNull(message = "Category is required")
-    private Category category;
+    private Boolean isFalseAlarm;
+
+    private Long areaId;
+
+    private Long reportedById;
+
+    private Long assignedToId;
+
+    private Long supervisorId;
+
+    /*@NotNull(message = "Category is required")
+    private Category category;*/
+
 }
 
