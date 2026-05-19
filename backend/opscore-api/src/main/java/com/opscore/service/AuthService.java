@@ -15,21 +15,22 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public String login(String username, String password) {
+    public String login(String email, String password) {
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("Usuario no encontrado"));
 
-        if (!user.isEnabled()) {
+        if (!user.isActive()) {
             throw new BadRequestException("User is disabled");
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            //throw new RuntimeException("Credenciales inválidas");
-            throw new BadRequestException("Invalid username or password");
+            throw new BadRequestException("Invalid email or password");
         }
 
         return jwtService.generateToken(user);
     }
+
 }
 

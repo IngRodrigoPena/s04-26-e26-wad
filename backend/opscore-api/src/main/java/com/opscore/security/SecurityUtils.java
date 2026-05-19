@@ -6,7 +6,7 @@ public class SecurityUtils {
 
     private SecurityUtils() { }
 
-    public static String getCurrentUsername() {
+    public static String getCurrentUserEmail() {
         return SecurityContextHolder
                 .getContext()
                 .getAuthentication()

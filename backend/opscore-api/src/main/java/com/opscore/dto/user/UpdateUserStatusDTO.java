@@ -5,5 +5,7 @@ import lombok.Data;
 @Data
 public class UpdateUserStatusDTO {
 
-    private boolean enabled;
+    private boolean isActive;
 }
+
+
