@@ -58,6 +58,37 @@ public class IncidentController {
         return ResponseEntity.noContent().build();
     }
 
+    //Start
+    @PreAuthorize("hasAnyRole('TECHNICIAN', 'ADMIN')")
+    @PatchMapping("/{id}/start")
+    public ResponseEntity<Void> startIncident(@PathVariable Long id) {
+        incidentService.startIncident(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    //hold
+    @PreAuthorize("hasAnyRole('TECHNICIAN', 'ADMIN')")
+    @PatchMapping("/{id}/hold")
+    public ResponseEntity<Void> holdIncident(@PathVariable Long id) {
+        incidentService.holdIncident(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    //cancel
+    @PreAuthorize("hasAnyRole('SUPERVISOR', 'ADMIN')")
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelIncident(@PathVariable Long id) {
+        incidentService.cancelIncident(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    //close
+    @PreAuthorize("hasAnyRole('SUPERVISOR', 'ADMIN')")
+    @PatchMapping("/{id}/close")
+    public ResponseEntity<Void> closeIncident(@PathVariable Long id) {
+        incidentService.closeIncident(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }
 

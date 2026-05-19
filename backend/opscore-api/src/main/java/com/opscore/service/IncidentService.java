@@ -10,11 +10,16 @@ public interface IncidentService {
     IncidentResponseDTO createIncident(IncidentRequestDTO request);
 
     List<IncidentResponseDTO> getAllIncidents();
-
     IncidentResponseDTO getIncidentById(Long id);
-
     List<AssignmentResponseDTO> getAssignmentHistory(Long incidentId);
+    //public void resolveIncident(Long incidentId);
+    void resolveIncident(Long incidentId);
 
-    public void resolveIncident(Long incidentId);
+    void startIncident(Long incidentId);
+    void holdIncident(Long incidentId);
+    void cancelIncident(Long incidentId);
+    void closeIncident(Long incidentId);
+
+
 }
 

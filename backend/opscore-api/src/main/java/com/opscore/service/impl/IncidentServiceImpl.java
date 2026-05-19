@@ -177,8 +177,6 @@ public class IncidentServiceImpl implements IncidentService {
                         "Incident with id " + incidentId + " not found"
                 ));
 
-
-
         // 2. Obtener asignaciones ordenadas
         List<Assignment> assignments = assignmentRepository
                 .findByIncidentIdOrderByAssignedAtDesc(incidentId);
@@ -208,13 +206,71 @@ public class IncidentServiceImpl implements IncidentService {
         }
 
         incident.setStatus(IncidentStatus.RESOLVED);
-
         incident.setResolvedAt(LocalDateTime.now());
-
         incident.setResolvedBy(SecurityUtils.getCurrentUserEmail());
-
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
 
+        incidentRepository.save(incident);
+    }
+
+    @Override
+    public void startIncident(Long incidentId) {
+        Incident incident = incidentRepository.findById(incidentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Incident not found"));
+        if (   incident.getStatus() != IncidentStatus.ASSIGNED &&
+               incident.getStatus() != IncidentStatus.ON_HOLD
+        ) {
+            throw new BadRequestException(
+                    "Only ASSIGNED or ON_HOLD incidents can be started");
+        }
+        incident.setStatus(IncidentStatus.IN_PROGRESS);
+        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
+        incidentRepository.save(incident);
+    }
+
+    @Override
+    public void holdIncident(Long incidentId) {
+        Incident incident = incidentRepository.findById(incidentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Incident not found"));
+        if (incident.getStatus() != IncidentStatus.IN_PROGRESS) {
+            throw new BadRequestException(
+                    "Only IN_PROGRESS incidents can be put on hold");
+        }
+        incident.setStatus(IncidentStatus.ON_HOLD);
+        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
+        incidentRepository.save(incident);
+    }
+
+    @Override
+    public void cancelIncident(Long incidentId) {
+        Incident incident = incidentRepository.findById(incidentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Incident not found"));
+        if (
+                incident.getStatus() == IncidentStatus.CLOSED ||
+                        incident.getStatus() == IncidentStatus.RESOLVED
+        ) {
+            throw new BadRequestException(
+                    "Cannot cancel resolved or closed incidents");
+        }
+        incident.setStatus(IncidentStatus.CANCELED);
+        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
+        incidentRepository.save(incident);
+    }
+
+    @Override
+    public void closeIncident(Long incidentId) {
+        Incident incident = incidentRepository.findById(incidentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Incident not found"));
+        if (incident.getStatus() != IncidentStatus.RESOLVED) {
+            throw new BadRequestException(
+                    "Only RESOLVED incidents can be closed");
+        }
+        incident.setStatus(IncidentStatus.CLOSED);
+        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
         incidentRepository.save(incident);
     }
 
