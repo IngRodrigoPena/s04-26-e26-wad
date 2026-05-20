@@ -8,6 +8,7 @@ import com.opscore.entity.Assignment;
 import com.opscore.entity.Incident;
 import com.opscore.entity.User;
 //import com.opscore.enums.Category;
+import com.opscore.enums.IncidentAction;
 import com.opscore.enums.IncidentStatus;
 import com.opscore.exception.BadRequestException;
 import com.opscore.exception.ResourceNotFoundException;
@@ -16,6 +17,7 @@ import com.opscore.repository.AssignmentRepository;
 import com.opscore.repository.IncidentRepository;
 import com.opscore.repository.UserRepository;
 import com.opscore.security.SecurityUtils;
+import com.opscore.service.IncidentLogService;
 import com.opscore.service.IncidentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,23 +29,34 @@ import java.util.List;
 //@RequiredArgsConstructor
 public class IncidentServiceImpl implements IncidentService {
 
-    private final IncidentRepository incidentRepository;
-    private final AssignmentRepository assignmentRepository;
-    private final UserRepository userRepository;
-    private final AreaRepository areaRepository;
+    private final IncidentRepository    incidentRepository;
+    private final AssignmentRepository  assignmentRepository;
+    private final UserRepository        userRepository;
+    private final AreaRepository        areaRepository;
+    private final IncidentLogService    incidentLogService;
 
 
     public IncidentServiceImpl(IncidentRepository   incidentRepository,
                                AssignmentRepository assignmentRepository,
                                UserRepository       userRepository,
-                               AreaRepository       areaRepository
+                               AreaRepository       areaRepository,
+                               IncidentLogService   incidentLogService
     ) {
         this.incidentRepository   = incidentRepository;
         this.assignmentRepository = assignmentRepository;
         this.userRepository       = userRepository;
         this.areaRepository       = areaRepository;
+        this.incidentLogService   = incidentLogService;
+
     }
 
+    //helper
+    private User getCurrentAuthenticatedUser() {
+        String currentEmail = SecurityUtils.getCurrentUserEmail();
+        return userRepository.findByEmail(currentEmail)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Current user not found"));
+    }
 
     @Override
     public IncidentResponseDTO createIncident(IncidentRequestDTO request) {
@@ -99,6 +112,13 @@ public class IncidentServiceImpl implements IncidentService {
                 .build();
 
         Incident saved = incidentRepository.save(incident);
+        //auditoria
+        incidentLogService.logAction(
+                saved,
+                saved.getReportedBy(),
+                IncidentAction.INCIDENT_CREATED,
+                "Incident created"
+        );
 
         return mapToResponse(saved);
     }
@@ -144,15 +164,11 @@ public class IncidentServiceImpl implements IncidentService {
 
         dto.setCreatedAt(incident.getCreatedAt());
         dto.setUpdatedAt(incident.getUpdatedAt());
-
-        //dto.setResolvedAt(incident.getResolvedAt());
-
         return dto;
     }
 
     @Override
     public List<IncidentResponseDTO> getAllIncidents() {
-
         return incidentRepository.findAll()
                 .stream()
                 .map(this::mapToResponse)
@@ -161,7 +177,6 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     public IncidentResponseDTO getIncidentById(Long id) {
-
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Incident not found with id: " + id));
 
@@ -170,7 +185,6 @@ public class IncidentServiceImpl implements IncidentService {
 
     @Override
     public List<AssignmentResponseDTO> getAssignmentHistory(Long incidentId) {
-
         // 1. Validar que el incidente existe
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -194,7 +208,6 @@ public class IncidentServiceImpl implements IncidentService {
     }
 
     public void resolveIncident(Long incidentId) {
-
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Incident not found"));
@@ -205,12 +218,23 @@ public class IncidentServiceImpl implements IncidentService {
                     "Cannot resolve a CLOSED incident");
         }
 
+        User currentUser = getCurrentAuthenticatedUser();
+
         incident.setStatus(IncidentStatus.RESOLVED);
         incident.setResolvedAt(LocalDateTime.now());
         incident.setResolvedBy(SecurityUtils.getCurrentUserEmail());
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
 
-        incidentRepository.save(incident);
+        //incidentRepository.save(incident);
+        Incident updatedIncident = incidentRepository.save(incident);
+
+        //auditoria
+        incidentLogService.logAction(
+                incident,
+                currentUser,
+                IncidentAction.RESOLVED,
+                "Incident resolved"
+        );
     }
 
     @Override
@@ -224,9 +248,21 @@ public class IncidentServiceImpl implements IncidentService {
             throw new BadRequestException(
                     "Only ASSIGNED or ON_HOLD incidents can be started");
         }
+
+        User currentUser = getCurrentAuthenticatedUser();
         incident.setStatus(IncidentStatus.IN_PROGRESS);
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
-        incidentRepository.save(incident);
+
+        Incident updatedIncident = incidentRepository.save(incident);
+        //incidentRepository.save(incident);
+
+        //auditoria
+        incidentLogService.logAction(
+                incident,
+                currentUser,
+                IncidentAction.STARTED,
+                "Incident work started"
+        );
     }
 
     @Override
@@ -238,9 +274,22 @@ public class IncidentServiceImpl implements IncidentService {
             throw new BadRequestException(
                     "Only IN_PROGRESS incidents can be put on hold");
         }
+
+        User currentUser = getCurrentAuthenticatedUser();
+
         incident.setStatus(IncidentStatus.ON_HOLD);
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
-        incidentRepository.save(incident);
+
+        //incidentRepository.save(incident);
+        Incident updatedIncident = incidentRepository.save(incident);
+
+        //auditoria
+        incidentLogService.logAction(
+                incident,
+                currentUser,
+                IncidentAction.PUT_ON_HOLD,
+                "Incident put on hold"
+        );
     }
 
     @Override
@@ -255,9 +304,22 @@ public class IncidentServiceImpl implements IncidentService {
             throw new BadRequestException(
                     "Cannot cancel resolved or closed incidents");
         }
+
+        User currentUser = getCurrentAuthenticatedUser();
+
         incident.setStatus(IncidentStatus.CANCELED);
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
-        incidentRepository.save(incident);
+
+        //incidentRepository.save(incident);
+        Incident updatedIncident = incidentRepository.save(incident);
+
+        //auditoria
+        incidentLogService.logAction(
+                incident,
+                currentUser,
+                IncidentAction.CANCELED,
+                "Incident canceled"
+        );
     }
 
     @Override
@@ -269,9 +331,22 @@ public class IncidentServiceImpl implements IncidentService {
             throw new BadRequestException(
                     "Only RESOLVED incidents can be closed");
         }
+
+        User currentUser = getCurrentAuthenticatedUser();
+
         incident.setStatus(IncidentStatus.CLOSED);
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
-        incidentRepository.save(incident);
+
+        //incidentRepository.save(incident);
+        Incident updatedIncident = incidentRepository.save(incident);
+
+        //auditoria
+        incidentLogService.logAction(
+                incident,
+                currentUser,
+                IncidentAction.CLOSED,
+                "Incident closed"
+        );
     }
 
 }

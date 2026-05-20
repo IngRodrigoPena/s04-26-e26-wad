@@ -5,6 +5,7 @@ import com.opscore.dto.assignment.AssignmentResponseDTO;
 import com.opscore.entity.Assignment;
 import com.opscore.entity.Incident;
 import com.opscore.entity.User;
+import com.opscore.enums.IncidentAction;
 import com.opscore.enums.IncidentStatus;
 import com.opscore.exception.BadRequestException;
 import com.opscore.exception.ResourceNotFoundException;
@@ -20,16 +21,19 @@ import java.util.List;
 @Service
 public class AssignmentService {
 
-    private final IncidentRepository incidentRepository;
-    private final AssignmentRepository assignmentRepository;
-    private final UserRepository userRepository;
+    private final IncidentRepository    incidentRepository;
+    private final AssignmentRepository  assignmentRepository;
+    private final UserRepository        userRepository;
+    private final IncidentLogService    incidentLogService;
 
     public AssignmentService(IncidentRepository   incidentRepository,
                              AssignmentRepository assignmentRepository,
-                             UserRepository       userRepository) {
+                             UserRepository       userRepository,
+                             IncidentLogService   incidentLogService) {
         this.incidentRepository   = incidentRepository;
         this.assignmentRepository = assignmentRepository;
         this.userRepository       = userRepository;
+        this.incidentLogService   = incidentLogService;
     }
 
     public void assignIncident(Long incidentId, AssignmentRequestDTO request) {
@@ -46,36 +50,52 @@ public class AssignmentService {
         }
 
 
-
         // 3. Crear Assignment
         Assignment assignment = new Assignment();
         assignment.setIncident(incident);
-        //assignment.setAssignedTo(request.getAssignedTo());
         User assignedTo = userRepository.findById(request.getAssignedToId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Assigned user not found"));
 
         // 🔥 Simulación de usuario actual
-        //assignment.setAssignedBy(SecurityUtils.getCurrentUserEmail());
         String currentEmail = SecurityUtils.getCurrentUserEmail();
         User assignedBy = userRepository.findByEmail(currentEmail)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Current user not found"));
 
-        //Assignment assignment = new Assignment();
         assignment.setIncident(incident);
+
+        User previousAssignee = incident.getAssignedTo();
+
         assignment.setAssignedTo(assignedTo);
+
+        IncidentAction action =
+                previousAssignee == null
+                        ? IncidentAction.ASSIGNED
+                        : IncidentAction.REASSIGNED;
+
+        /////
+        //1. actualizar incident
+        //2. guardar incident
+        //3. guardar assignment
+        //4. crear log
         assignment.setAssignedBy(assignedBy);
 
-        // 4. Guardar assignment
-        assignmentRepository.save(assignment);
-
-        // 5. Actualizar incidente principal
+        // Actualizar incidente principal
         incident.setAssignedTo(assignedTo);
         incident.setSupervisor(assignedBy);
         incident.setStatus(IncidentStatus.ASSIGNED);
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
-
-        incidentRepository.save(incident);
+        //guarda incidente
+        Incident updatedIncident = incidentRepository.save(incident);
+        // Guardar assignment
+        assignmentRepository.save(assignment);
+        //auditoria
+        incidentLogService.logAction(
+                incident,
+                assignedBy,
+                action,
+                "Incident assigned to " + assignedTo.getFirstName()
+        );
     }
 }

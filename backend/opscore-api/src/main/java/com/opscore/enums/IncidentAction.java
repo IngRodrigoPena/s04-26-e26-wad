@@ -4,15 +4,13 @@ public enum IncidentAction {
 
     INCIDENT_CREATED,
     ASSIGNED,
+    REASSIGNED,
     STARTED,
     PUT_ON_HOLD,
     RESOLVED,
     CLOSED,
     CANCELED,
-    COMMENT_ADDED,
-    REASSIGNED
-    //STATUS_CHANGED,
-
+    COMMENT_ADDED
 }
 
 
