@@ -15,14 +15,24 @@ public class JwtService {
 
     public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(user.getUsername())
+                //.setSubject(user.Username())
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 24h
                 .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
                 .compact();
     }
 
-    public String extractUsername(String token) {
+   /* public String extractUsername(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET.getBytes())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }*/
+
+    public String extractEmail(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(SECRET.getBytes())
                 .build()
