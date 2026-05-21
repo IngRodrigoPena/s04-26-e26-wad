@@ -41,7 +41,7 @@ export function NewIncidentDialog({ open, onOpenChange }: NewIncidentDialogProps
   const { user } = useAuthStore();
   const { language } = useI18nStore();
   const t = useTranslation(language);
-  const { addIncident } = useIncidentStore();
+  const { createIncident } = useIncidentStore();
 
   const [formData, setFormData] = useState({
     tipo: "" as IncidentType,
@@ -52,7 +52,7 @@ export function NewIncidentDialog({ open, onOpenChange }: NewIncidentDialogProps
     ubicacion: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.tipo || !formData.area || !formData.prioridad || !formData.titulo || !formData.descripcion) {
@@ -60,22 +60,29 @@ export function NewIncidentDialog({ open, onOpenChange }: NewIncidentDialogProps
       return;
     }
 
-    addIncident({
-      ...formData,
-      reportadoPor: String(user?.id || ""),
-      reportadoPorNombre: user?.firstName || "",
-    });
+    try {
+      await createIncident({
+        title: formData.titulo,
+        description: formData.descripcion,
+        type: "OTHER" as any, // TODO: Mapear tipo legacy a IncidentType
+        priority: (formData.prioridad === "critica" ? "CRITICAL" : 
+                   formData.prioridad === "alta" ? "HIGH" : 
+                   formData.prioridad === "baja" ? "LOW" : "MEDIUM") as any,
+      });
 
-    toast.success(t.incidents.messages.incidentCreated);
-    onOpenChange(false);
-    setFormData({
-      tipo: "" as IncidentType,
-      area: "" as IncidentArea,
-      prioridad: "" as IncidentPriority,
-      titulo: "",
-      descripcion: "",
-      ubicacion: "",
-    });
+      toast.success(t.incidents.messages.incidentCreated);
+      onOpenChange(false);
+      setFormData({
+        tipo: "" as IncidentType,
+        area: "" as IncidentArea,
+        prioridad: "" as IncidentPriority,
+        titulo: "",
+        descripcion: "",
+        ubicacion: "",
+      });
+    } catch (error) {
+      toast.error("Error al crear incidente");
+    }
   };
 
   return (

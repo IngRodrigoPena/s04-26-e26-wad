@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, ArrowLeft, ArrowRight, CheckCircle, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useI18nStore } from "@/lib/stores";
+import { useI18nStore } from "@/lib/store";
 import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

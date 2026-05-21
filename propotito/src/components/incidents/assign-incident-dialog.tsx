@@ -54,7 +54,10 @@ export function AssignIncidentDialog({
 
     const tecnico = tecnicos.find((t) => t.id === selectedTecnico);
     if (tecnico) {
-      assignIncident(String(incident.id), String(tecnico.id), "supervisor-001"); // TODO: Obtener supervisorId del usuario actual
+      assignIncident(Number(incident.id), {
+        technicianId: Number(tecnico.id),
+        supervisorId: 1, // TODO: Obtener supervisorId del usuario actual
+      });
       toast.success(t.incidents.messages.incidentAssigned);
       onOpenChange(false);
       setSelectedTecnico("");

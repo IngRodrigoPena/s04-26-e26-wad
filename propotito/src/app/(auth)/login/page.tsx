@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, Sun, Moon, UserCircle } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuthStore } from "@/stores";
-import { useI18nStore } from "@/lib/stores";
+import { useI18nStore } from "@/lib/store";
 import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores";
-import { useI18nStore, type Language } from "@/lib/stores";
+import { useI18nStore, type Language } from "@/lib/store";
 import { useTranslation } from "@/lib/i18n";
 import { getNavItemsByRole, hasRouteAccess, getRoleLabel, getRoleColor } from "@/lib/rbac";
 import { Role, type UserResponseDTO } from "@/api/types";
@@ -74,19 +74,24 @@ export interface DashboardViewModel {
 export function useDashboard(): DashboardViewModel {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isAuthenticated, logout: authLogout, loading } = useAuthStore();
+  const { user, isAuthenticated, logout: authLogout, loading, fetchCurrentUser } = useAuthStore();
   const { language, setLanguage } = useI18nStore();
   const t = useTranslation(language);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [hasToken, setHasToken] = useState(false);
 
-  // Mount check + token check
+  // Mount check + token check + fetch current user
   useEffect(() => {
     setMounted(true);
     // Check if there's a token in localStorage
     const token = localStorage.getItem('token');
     setHasToken(!!token);
+    
+    // Refresh user data to get latest info (avatar, etc.)
+    if (token) {
+      fetchCurrentUser();
+    }
   }, []);
 
   // Auth redirect - wait for both mounted and auth state loaded

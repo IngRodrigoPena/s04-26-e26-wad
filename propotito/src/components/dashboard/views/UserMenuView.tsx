@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect } from "react";
 import { LogOut, Moon, Sun, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Language } from "@/lib/stores";
+import type { Language } from "@/lib/store";
 
 interface LanguageOption {
   code: Language;

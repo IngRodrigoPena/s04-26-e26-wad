@@ -38,9 +38,9 @@ export default function IncidentsPage() {
   const [activeTab, setActiveTab] = useState("todos");
 
   const stats = getIncidentStats();
-  const abiertos = getIncidentsByStatus("abierto");
-  const enProceso = getIncidentsByStatus("en_proceso");
-  const cerrados = getIncidentsByStatus("cerrado");
+  const abiertos = getIncidentsByStatus("OPEN" as any);
+  const enProceso = getIncidentsByStatus("IN_PROGRESS" as any);
+  const cerrados = getIncidentsByStatus("CLOSED" as any);
 
   useGSAP(
     () => {
@@ -75,8 +75,8 @@ export default function IncidentsPage() {
       case "mis_incidentes":
         return incidents.filter(
           (inc) =>
-            inc.reportadoPor === String(user?.id) ||
-            inc.asignadoA === String(user?.id)
+            inc.reportedById === user?.id ||
+            inc.assignedToId === user?.id
         );
       default:
         return incidents;
@@ -201,7 +201,7 @@ export default function IncidentsPage() {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {filteredIncidents.map((incident) => (
-                <IncidentCard key={incident.id} incident={incident} />
+                <IncidentCard key={incident.id} incident={incident as any} />
               ))}
             </div>
           )}

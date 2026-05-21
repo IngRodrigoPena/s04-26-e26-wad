@@ -10,8 +10,8 @@ export { useAuthStore } from "@/stores/auth-store";
 // export { useIncidentsStore as useIncidentStore } from "@/stores/incidents-store-new";
 export type { Role, UserResponseDTO as User } from "@/api/types";
 
-// Exportar store legacy para mantener compatibilidad con componentes existentes
-export { useIncidentsStore as useIncidentStore } from "@/lib/stores/incidents-store";
+// Legacy store - usando el nuevo de @/stores
+export { useIncidentsStore as useIncidentStore } from "@/stores";
 
 // Tipos para el sistema de incidentes (legacy - migrar gradualmente)
 export type IncidentStatusLegacy = "abierto" | "asignado" | "en_proceso" | "en_espera" | "resuelto" | "cerrado" | "cancelado";
@@ -176,3 +176,21 @@ export const useI18nStore = create<I18nState>()(
     }
   )
 );
+
+// Re-exportar stores adicionales para compatibilidad
+export { useIncidentsStore, useUsersStore } from "@/stores";
+
+// Mock de catalogs store para evitar errores durante migración
+export const useCatalogsStore = () => ({
+  statuses: [],
+  priorities: [],
+  types: [],
+  areas: [],
+  fetchCatalogs: async () => {},
+  getRoleById: () => undefined,
+  getAreaById: () => undefined,
+  getStatusById: () => undefined,
+  getPriorityById: () => undefined,
+  getTypeById: () => undefined,
+  getCompanyById: () => undefined,
+});

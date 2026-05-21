@@ -29,7 +29,7 @@ export function CloseIncidentDialog({
 }: CloseIncidentDialogProps) {
   const { language } = useI18nStore();
   const t = useTranslation(language);
-  const { closeIncident } = useIncidentStore();
+  const { resolveIncident } = useIncidentStore();
   const [solucion, setSolucion] = useState("");
   const [causaRaiz, setCausaRaiz] = useState("");
 
@@ -39,7 +39,7 @@ export function CloseIncidentDialog({
       return;
     }
 
-    closeIncident(String(incident.id), solucion, causaRaiz || "");
+    resolveIncident(Number(incident.id));
     toast.success(t.incidents.messages.incidentClosed);
     onOpenChange(false);
     setSolucion("");

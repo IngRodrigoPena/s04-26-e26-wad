@@ -5,7 +5,7 @@ import { useDashboard } from "@/components/dashboard/useDashboard";
 import { LoadingView } from "@/components/dashboard/views/LoadingView";
 import { SidebarView, HeaderView } from "@/components/dashboard/views/SidebarView";
 import { UserMenuView } from "@/components/dashboard/views/UserMenuView";
-import type { Language } from "@/lib/stores";
+import type { Language } from "@/lib/store";
 
 const LANGUAGES = [
   { code: "es" as Language, flag: "🇪🇸", label: "Español" },

@@ -15,7 +15,7 @@ import {
   UserCheck,
   ClipboardList,
 } from "lucide-react";
-import { useIncidentsStore, useAuthStore, useI18nStore, useCatalogsStore } from "@/lib/stores";
+import { useIncidentsStore, useAuthStore, useI18nStore, useCatalogsStore } from "@/lib/store";
 import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Role } from "@/api/types";
@@ -32,32 +32,32 @@ export default function DashboardPage() {
   const recentIncidents = incidents.slice(-5).reverse();
   
   const getStatusName = (statusId: string | number) => {
-    const status = statuses.find(s => String(s.id) === String(statusId));
+    const status = (statuses as any[]).find(s => String(s?.id) === String(statusId));
     return status?.name || String(statusId);
   };
 
   const getPriorityName = (priorityId: string | number) => {
-    const priority = priorities.find(p => String(p.id) === String(priorityId));
+    const priority = (priorities as any[]).find(p => String(p?.id) === String(priorityId));
     return priority?.name || String(priorityId);
   };
 
   const getTypeName = (typeId: string | number) => {
-    const type = types.find(t => String(t.id) === String(typeId));
+    const type = (types as any[]).find(t => String(t?.id) === String(typeId));
     return type?.name || String(typeId);
   };
 
   const getAreaName = (areaId: string | number) => {
-    const area = areas.find(a => String(a.id) === String(areaId));
+    const area = (areas as any[]).find(a => String(a?.id) === String(areaId));
     return area?.name || String(areaId);
   };
   
-  const statusOpen = statuses.find(s => s.name === "Abierto")?.id || "status-001";
-  const statusInProgress = statuses.find(s => s.name === "En Proceso")?.id || "status-002";
-  const statusClosed = statuses.find(s => s.name === "Cerrado")?.id || "status-003";
+  const statusOpen = (statuses as any[]).find(s => s?.name === "Abierto")?.id || "status-001";
+  const statusInProgress = (statuses as any[]).find(s => s?.name === "En Proceso")?.id || "status-002";
+  const statusClosed = (statuses as any[]).find(s => s?.name === "Cerrado")?.id || "status-003";
   
-  const openCount = stats.byStatus[statusOpen] || 0;
-  const inProgressCount = stats.byStatus[statusInProgress] || 0;
-  const closedCount = stats.byStatus[statusClosed] || 0;
+  const openCount = stats.open || 0;
+  const inProgressCount = stats.inProgress || 0;
+  const closedCount = stats.closed || 0;
 
   const dashboardStats = [
     {
@@ -269,16 +269,16 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div
                       className={`p-2 rounded-lg ${
-                        incident.id_status === statusOpen
+                        (incident as any).id_status === statusOpen
                           ? "bg-destructive/10"
-                          : incident.id_status === statusInProgress
+                          : (incident as any).id_status === statusInProgress
                           ? "bg-accent/10"
                           : "bg-primary/10"
                       }`}
                     >
-                      {incident.id_status === statusOpen ? (
+                      {(incident as any).id_status === statusOpen ? (
                         <AlertTriangle className="w-4 h-4 text-destructive" />
-                      ) : incident.id_status === statusInProgress ? (
+                      ) : (incident as any).id_status === statusInProgress ? (
                         <Clock className="w-4 h-4 text-accent" />
                       ) : (
                         <CheckCircle2 className="w-4 h-4 text-primary" />
@@ -287,16 +287,16 @@ export default function DashboardPage() {
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{incident.title}</p>
                       <p className="text-sm text-muted-foreground">
-                        {getTypeName(incident.id_type || "")} - {getAreaName(incident.id_area || "")}
+                        {getTypeName((incident as any).id_type || "")} - {getAreaName((incident as any).id_area || "")}
                       </p>
                     </div>
                   </div>
                   <div className="text-right ml-4">
                     <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                      {getPriorityName(incident.id_priority || "")}
+                       {getPriorityName((incident as any).id_priority || incident.priority || "")}
                     </span>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {new Date(incident.opening_date || incident.fechaCreacion || incident.createdAt || Date.now().toString()).toLocaleDateString(language)}
+                       {new Date((incident as any).opening_date || (incident as any).fechaCreacion || incident.createdAt || Date.now().toString()).toLocaleDateString(language)}
                     </p>
                   </div>
                 </motion.div>
@@ -315,7 +315,7 @@ export default function DashboardPage() {
             <h2 className="text-lg font-semibold">Resumen por Área</h2>
           </div>
           <div className="p-6 space-y-4">
-            {Object.entries(stats.byArea).map(([areaId, count], index) => (
+            {Object.entries(stats.porArea).map(([areaId, count], index) => (
               <motion.div
                 key={areaId}
                 initial={{ opacity: 0, x: -20 }}
@@ -347,7 +347,7 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
-      {stats.avgResolutionTime > 0 && (
+      {stats.tiempoPromedioResolucion > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -360,8 +360,8 @@ export default function DashboardPage() {
                 {t.incidents.stats.avgResolutionTime}
               </h3>
               <p className="text-3xl font-bold text-primary">
-                {Math.floor(stats.avgResolutionTime / 60)}h{" "}
-                {Math.floor(stats.avgResolutionTime % 60)}m
+                {Math.floor(stats.tiempoPromedioResolucion / 60)}h{" "}
+                {Math.floor(stats.tiempoPromedioResolucion % 60)}m
               </p>
               <p className="text-sm text-muted-foreground mt-2">
                 Basado en {closedCount} incidentes cerrados
