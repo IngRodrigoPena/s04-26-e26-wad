@@ -10,10 +10,13 @@ import com.opscore.service.IncidentLogService;
 import com.opscore.service.IncidentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springdoc.core.annotations.ParameterObject;
 
 import java.util.List;
 
@@ -114,6 +117,14 @@ public class IncidentController {
     getIncidentTimeline(@PathVariable Long id) {
         return ResponseEntity.ok(
                 incidentLogService.getIncidentTimeline(id)
+        );
+    }
+
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<IncidentResponseDTO>>
+           getIncidentsPaginated(@ParameterObject Pageable pageable) {
+            return ResponseEntity.ok(
+                   incidentService.getIncidentsPaginated(pageable)
         );
     }
 

@@ -28,6 +28,9 @@ import java.util.List;
 import com.opscore.enums.IncidentStatus;
 import com.opscore.enums.Priority;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 //@RequiredArgsConstructor
 public class IncidentServiceImpl implements IncidentService {
@@ -383,6 +386,14 @@ public class IncidentServiceImpl implements IncidentService {
         return incidents.stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+
+    //paginacion
+    @Override
+    public Page<IncidentResponseDTO>
+    getIncidentsPaginated(Pageable pageable) {
+        return incidentRepository.findAll(pageable)
+                .map(this::mapToResponse);
     }
 
 }

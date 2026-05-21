@@ -5,6 +5,8 @@ import com.opscore.dto.incident.IncidentRequestDTO;
 import com.opscore.dto.incident.IncidentResponseDTO;
 import com.opscore.enums.IncidentStatus;
 import com.opscore.enums.Priority;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -26,6 +28,10 @@ public interface IncidentService {
             IncidentStatus status,
             Priority priority,
             Long areaId
+    );
+
+    Page<IncidentResponseDTO> getIncidentsPaginated(
+            Pageable pageable
     );
 
 
