@@ -25,3 +25,9 @@ node_modules
 
 # Backup
 .backup
+
+# skill registry
+.atl/*
+
+# Next.js
+.next/*
