@@ -3,6 +3,8 @@ package com.opscore.controller;
 import com.opscore.dto.assignment.AssignmentResponseDTO;
 import com.opscore.dto.incident.IncidentRequestDTO;
 import com.opscore.dto.incident.IncidentResponseDTO;
+import com.opscore.dto.incident.IncidentTimelineResponseDTO;
+import com.opscore.service.IncidentLogService;
 import com.opscore.service.IncidentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.List;
 public class IncidentController {
 
     private final IncidentService incidentService;
+    private final IncidentLogService incidentLogService;
 
     @PostMapping
     public ResponseEntity<IncidentResponseDTO> createIncident(
@@ -88,6 +91,14 @@ public class IncidentController {
     public ResponseEntity<Void> closeIncident(@PathVariable Long id) {
         incidentService.closeIncident(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/timeline")
+    public ResponseEntity<List<IncidentTimelineResponseDTO>>
+    getIncidentTimeline(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                incidentLogService.getIncidentTimeline(id)
+        );
     }
 
 }

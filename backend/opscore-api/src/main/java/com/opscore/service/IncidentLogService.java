@@ -1,8 +1,11 @@
 package com.opscore.service;
 
+import com.opscore.dto.incident.IncidentTimelineResponseDTO;
 import com.opscore.entity.Incident;
 import com.opscore.enums.IncidentAction;
 import com.opscore.entity.User;
+
+import java.util.List;
 
 public interface IncidentLogService {
     void logAction(
@@ -11,4 +14,6 @@ public interface IncidentLogService {
             IncidentAction action,
             String comment
     );
+
+    List<IncidentTimelineResponseDTO> getIncidentTimeline(Long incidentId);
 }
