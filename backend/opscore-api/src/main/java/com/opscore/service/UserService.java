@@ -53,7 +53,6 @@ public class UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(role)
                 .area(area)
-                .avatar(request.getAvatar())
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -207,7 +206,5 @@ public class UserService {
 
         userRepository.save(user);
     }
-
-
 
 }

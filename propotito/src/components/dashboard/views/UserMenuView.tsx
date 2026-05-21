@@ -17,6 +17,8 @@ interface UserMenuViewProps {
   displayName: string;
   fullName: string;
   email: string;
+  avatar?: string; // URL del avatar desde la API
+  roleLabel?: string;
   currentLanguage: Language;
   isDarkMode: boolean;
   labels: {
@@ -36,6 +38,8 @@ export function UserMenuView({
   displayName,
   fullName,
   email,
+  avatar,
+  roleLabel,
   currentLanguage,
   isDarkMode,
   labels,
@@ -66,9 +70,17 @@ export function UserMenuView({
         className="flex items-center gap-2 px-2 hover:bg-accent"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="w-7 h-7 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-xs shrink-0">
-          {initials}
-        </div>
+        {avatar ? (
+          <img 
+            src={avatar} 
+            alt={displayName}
+            className="w-7 h-7 rounded-full object-cover shrink-0 bg-muted"
+          />
+        ) : (
+          <div className="w-7 h-7 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-xs shrink-0">
+            {initials}
+          </div>
+        )}
         <span className="hidden sm:inline text-sm font-medium">{displayName}</span>
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </Button>
@@ -76,12 +88,23 @@ export function UserMenuView({
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-64 bg-popover border border-border rounded-lg shadow-lg z-[200]">
           <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-base shrink-0">
-              {initials}
-            </div>
+            {avatar ? (
+              <img 
+                src={avatar} 
+                alt={fullName}
+                className="w-10 h-10 rounded-full object-cover shrink-0 bg-muted"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-base shrink-0">
+                {initials}
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{fullName}</p>
               <p className="text-xs text-muted-foreground truncate">{email}</p>
+              {roleLabel && (
+                <p className="text-xs text-primary font-medium mt-0.5">{roleLabel}</p>
+              )}
             </div>
           </div>
 

@@ -55,6 +55,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             displayName={vm.user.displayName}
             fullName={vm.user.fullName}
             email={vm.user.email}
+            avatar={vm.user.avatar}
+            roleLabel={vm.user.roleLabel}
             currentLanguage={vm.language}
             isDarkMode={theme === "dark"}
             labels={{

@@ -28,6 +28,7 @@ export interface UserViewModel {
   displayName: string;
   fullName: string;
   email: string;
+  avatar?: string;
   roleLabel: string;
   roleColorClass: string;
 }
@@ -130,6 +131,7 @@ export function useDashboard(): DashboardViewModel {
     displayName: user.firstName || user.email || "Usuario",
     fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.email || "Usuario",
     email: user.email,
+    avatar: user.avatar || undefined,
     roleLabel: getRoleLabel(user.role, language),
     roleColorClass: getRoleColor(user.role),
   } : hasToken ? {
@@ -138,6 +140,7 @@ export function useDashboard(): DashboardViewModel {
     displayName: "Usuario",
     fullName: "Cargando...",
     email: "",
+    avatar: undefined,
     roleLabel: "Cargando...",
     roleColorClass: "bg-muted text-muted-foreground",
   } : null;
