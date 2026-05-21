@@ -1,5 +1,6 @@
 package com.opscore.entity;
 
+import com.opscore.dto.incident.IncidentPriorityMetricsDTO;
 import jakarta.persistence.*;
 
 @Entity
@@ -51,5 +52,6 @@ public class Role {
     public void setDescription(String description) {
         this.description = description;
     }
+
 }
 
