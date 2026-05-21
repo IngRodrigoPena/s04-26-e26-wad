@@ -25,6 +25,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.opscore.enums.IncidentStatus;
+import com.opscore.enums.Priority;
+
 @Service
 //@RequiredArgsConstructor
 public class IncidentServiceImpl implements IncidentService {
@@ -347,6 +350,39 @@ public class IncidentServiceImpl implements IncidentService {
                 IncidentAction.CLOSED,
                 "Incident closed"
         );
+    }
+
+    @Override
+    public List<IncidentResponseDTO> getFilteredIncidents(
+            IncidentStatus status,
+            Priority priority,
+            Long areaId
+    ) {
+        List<Incident> incidents;
+        // status + priority
+        if (status != null && priority != null) {
+            incidents = incidentRepository
+                    .findByStatusAndPriority(status, priority);
+        }
+        // status
+        else if (status != null) {
+            incidents = incidentRepository.findByStatus(status);
+        }
+        // priority
+        else if (priority != null) {
+            incidents = incidentRepository.findByPriority(priority);
+        }
+        // area
+        else if (areaId != null) {
+            incidents = incidentRepository.findByAreaId(areaId);
+        }
+        // all
+        else {
+            incidents = incidentRepository.findAll();
+        }
+        return incidents.stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
 }

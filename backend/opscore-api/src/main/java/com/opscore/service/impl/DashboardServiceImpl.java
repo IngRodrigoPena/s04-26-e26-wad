@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.opscore.dto.incident.IncidentPriorityMetricsDTO;
 
+import com.opscore.dto.AreaMetricsDTO;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
@@ -37,5 +40,10 @@ public class DashboardServiceImpl implements DashboardService {
                 incidentRepository.countByPriority(Priority.CRITICAL)
                // incidentRepository.countByPriority(Priority.EMERGENCY)
         );
+    }
+
+    @Override
+    public List<AreaMetricsDTO> getAreaMetrics() {
+        return incidentRepository.countIncidentsByArea();
     }
 }

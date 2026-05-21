@@ -3,6 +3,8 @@ package com.opscore.service;
 import com.opscore.dto.assignment.AssignmentResponseDTO;
 import com.opscore.dto.incident.IncidentRequestDTO;
 import com.opscore.dto.incident.IncidentResponseDTO;
+import com.opscore.enums.IncidentStatus;
+import com.opscore.enums.Priority;
 
 import java.util.List;
 
@@ -19,6 +21,12 @@ public interface IncidentService {
     void holdIncident(Long incidentId);
     void cancelIncident(Long incidentId);
     void closeIncident(Long incidentId);
+
+    List<IncidentResponseDTO> getFilteredIncidents(
+            IncidentStatus status,
+            Priority priority,
+            Long areaId
+    );
 
 
 }

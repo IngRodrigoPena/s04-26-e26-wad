@@ -4,6 +4,8 @@ import com.opscore.dto.assignment.AssignmentResponseDTO;
 import com.opscore.dto.incident.IncidentRequestDTO;
 import com.opscore.dto.incident.IncidentResponseDTO;
 import com.opscore.dto.incident.IncidentTimelineResponseDTO;
+import com.opscore.enums.IncidentStatus;
+import com.opscore.enums.Priority;
 import com.opscore.service.IncidentLogService;
 import com.opscore.service.IncidentService;
 import jakarta.validation.Valid;
@@ -33,8 +35,22 @@ public class IncidentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<IncidentResponseDTO>> getAllIncidents() {
-        return ResponseEntity.ok(incidentService.getAllIncidents());
+    public ResponseEntity<List<IncidentResponseDTO>>
+    getIncidents(
+            @RequestParam(required = false)
+            IncidentStatus status,
+            @RequestParam(required = false)
+            Priority priority,
+            @RequestParam(required = false)
+            Long areaId
+    ) {
+        return ResponseEntity.ok(
+                incidentService.getFilteredIncidents(
+                        status,
+                        priority,
+                        areaId
+                )
+        );
     }
 
     @GetMapping("/{id}")

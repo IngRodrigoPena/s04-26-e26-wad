@@ -7,6 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.opscore.dto.AreaMetricsDTO;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/dashboard")
 @RequiredArgsConstructor
@@ -27,6 +31,14 @@ public class DashboardController {
     getIncidentPriorityMetrics() {
         return ResponseEntity.ok(
                 dashboardService.getIncidentPriorityMetrics()
+        );
+    }
+
+    @GetMapping("/incidents/area")
+    public ResponseEntity<List<AreaMetricsDTO>>
+    getAreaMetrics() {
+        return ResponseEntity.ok(
+                dashboardService.getAreaMetrics()
         );
     }
 }
