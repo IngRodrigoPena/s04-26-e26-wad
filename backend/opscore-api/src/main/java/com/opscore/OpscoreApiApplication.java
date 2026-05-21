@@ -40,12 +40,19 @@ public class OpscoreApiApplication {
 			// =========================
 			// ROLES
 			// =========================
-
 			Role adminRole = roleRepository.findByName("ADMIN")
 					.orElseGet(() -> {
 						Role role = new Role();
 						role.setName("ADMIN");
 						role.setDescription("System administrator");
+						return roleRepository.save(role);
+					});
+
+			Role managerRole = roleRepository.findByName("MANAGER")
+					.orElseGet(() -> {
+						Role role = new Role();
+						role.setName("MANAGER");
+						role.setDescription("System manager");
 						return roleRepository.save(role);
 					});
 
@@ -65,13 +72,21 @@ public class OpscoreApiApplication {
 						return roleRepository.save(role);
 					});
 
-			/*Role userRole = roleRepository.findByName("USER")
+			Role operatorRole = roleRepository.findByName("OPERATOR")
+					.orElseGet(() -> {
+						Role role = new Role();
+						role.setName("OPERATOR");
+						role.setDescription("Operator");
+						return roleRepository.save(role);
+					});
+
+			Role userRole = roleRepository.findByName("USER")
 					.orElseGet(() -> {
 						Role role = new Role();
 						role.setName("USUARIO");
 						role.setDescription("Usuario");
 						return roleRepository.save(role);
-					});*/
+					});
 
 			// =========================
 			// AREA
@@ -86,12 +101,29 @@ public class OpscoreApiApplication {
 						return areaRepository.save(area);
 					});
 
+			Area contabilityArea = areaRepository.findByName("CONTABILITY")
+					.orElseGet(() -> {
+						Area area = new Area();
+						area.setName("CONTABILITY");
+						area.setDescription("Contability area");
+						area.setColor("#adff33");
+						return areaRepository.save(area);
+					});
+					
+			Area rrhhArea = areaRepository.findByName("RRHH")
+					.orElseGet(() -> {
+						Area area = new Area();
+						area.setName("RRHH");
+						area.setDescription("RRHH area");
+						area.setColor("#7a33ff");
+						return areaRepository.save(area);
+					});
+
 			// =========================
-			// ADMIN USER
+			// 1.- ADMIN USER
 			// =========================
 
 			if (!userRepository.existsByEmail("admin@opscore.com")) {
-
 				User admin = User.builder()
 						.firstName("System")
 						.lastName("Admin")
@@ -104,6 +136,93 @@ public class OpscoreApiApplication {
 
 				userRepository.save(admin);
 			}
+			// =========================
+			// 2.- MANAGER USER
+			// =========================
+
+			if (!userRepository.existsByEmail("manager@opscore.com")) {
+				User manager = User.builder()
+						.firstName("System")
+						.lastName("Manager")
+						.email("manager@opscore.com")
+						.password(passwordEncoder.encode("abcd1234"))
+						.role(managerRole)
+						.area(productionArea)
+						.createdAt(LocalDateTime.now())
+						.build();
+
+				userRepository.save(manager);
+			}
+
+			// =========================
+			// 3.- SUPERVISOR USER
+			// =========================
+			if (!userRepository.existsByEmail("supervisor@opscore.com")) {
+
+				User supervisor = User.builder()
+						.firstName("System")
+						.lastName("Supervisor")
+						.email("supervisor@opscore.com")
+						.password(passwordEncoder.encode("abcd1234"))
+						.role(supervisorRole)
+						.area(productionArea)
+						.createdAt(LocalDateTime.now())
+						.build();
+
+				userRepository.save(supervisor);
+			}
+			// =========================
+			// 4.- TECHNICIAN USER
+			// =========================
+			if (!userRepository.existsByEmail("technician@opscore.com")) {
+
+				User technician = User.builder()
+						.firstName("System")
+						.lastName("technician")
+						.email("technician@opscore.com")
+						.password(passwordEncoder.encode("abcd1234"))
+						.role(technicianRole)
+						.area(productionArea)
+						.createdAt(LocalDateTime.now())
+						.build();
+
+				userRepository.save(technician);
+			}
+			// =========================
+			// 5.- OPERATOR USER
+			// =========================
+			if (!userRepository.existsByEmail("operator@opscore.com")) {
+
+				User operator = User.builder()
+						.firstName("System")
+						.lastName("Operator")
+						.email("operator@opscore.com")
+						.password(passwordEncoder.encode("abcd1234"))
+						.role(operatorRole)
+						.area(productionArea)
+						.createdAt(LocalDateTime.now())
+						.build();
+
+				userRepository.save(operator);
+			}
+			// =========================
+			// 6.- USER USER
+			// =========================
+			if (!userRepository.existsByEmail("user@opscore.com")) {
+
+				User user = User.builder()
+						.firstName("System")
+						.lastName("user")
+						.email("user@opscore.com")
+						.password(passwordEncoder.encode("abcd1234"))
+						.role(userRole)
+						.area(productionArea)
+						.createdAt(LocalDateTime.now())
+						.build();
+
+				userRepository.save(user);
+			}
+
 		};
 	}
 

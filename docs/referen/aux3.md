@@ -1,14 +1,4 @@
-
-
 OPsCore. Plataforma de Gestión de Incidentes
-
-
-
-
-
-
-
-
 
 Equipo: S04-26-Equipo 25-Web App
 Integrantes:
@@ -17,23 +7,9 @@ Rodrigo Peña Ramirez
 David Caycedo Blum
 Jesus Medina
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 1. Introducción y Propósito
 El presente documento define los objetivos, el alcance y las reglas de negocio para la plataforma OpsCore. El sistema surge como una solución tecnológica para eliminar el uso de papel y mensajería informal (WhatsApp) en la planta industrial, permitiendo la trazabilidad total de fallas, accidentes y desviaciones de calidad.
+
 2. Objetivos del Proyecto
 2.1. Objetivo General
 Desarrollar e implementar una plataforma digital para la gestión integral de incidentes que permita el reporte inmediato, el seguimiento del ciclo de vida de la resolución y el análisis de causas raíz para optimizar la eficiencia operativa y reducir incidentes críticos.
@@ -42,13 +18,6 @@ Digitalización: Proveer un formulario móvil optimizado para el reporte de fall
 Trazabilidad: Registrar cada cambio de estado del incidente mediante un sistema de logs (INCIDENT_LOG).
 Eficiencia: Medir métricas críticas como el tiempo de respuesta y la tasa de resolución.
 Prevención: Implementar un módulo de análisis de causa raíz para identificar patrones recurrentes por área y tipo de incidente.
-
-
-
-
-
-
-
 
 3. Alcance del Sistema
 El sistema cubrirá el ciclo de vida completo de un incidente, desde su detección hasta su cierre y análisis posterior.

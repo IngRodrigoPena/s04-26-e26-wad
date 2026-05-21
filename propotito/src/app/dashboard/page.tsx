@@ -10,10 +10,16 @@ import {
   ArrowUpRight,
   BarChart3,
   AlertCircle,
+  Shield,
+  Users,
+  UserCheck,
+  ClipboardList,
 } from "lucide-react";
 import { useIncidentsStore, useAuthStore, useI18nStore, useCatalogsStore } from "@/lib/stores";
 import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import { Role } from "@/api/types";
+import { getRoleLabel, getRoleColor } from "@/lib/rbac";
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
@@ -25,24 +31,24 @@ export default function DashboardPage() {
   const stats = getIncidentStats();
   const recentIncidents = incidents.slice(-5).reverse();
   
-  const getStatusName = (statusId: string) => {
-    const status = statuses.find(s => s.id === statusId);
-    return status?.name || statusId;
+  const getStatusName = (statusId: string | number) => {
+    const status = statuses.find(s => String(s.id) === String(statusId));
+    return status?.name || String(statusId);
   };
-  
-  const getPriorityName = (priorityId: string) => {
-    const priority = priorities.find(p => p.id === priorityId);
-    return priority?.name || priorityId;
+
+  const getPriorityName = (priorityId: string | number) => {
+    const priority = priorities.find(p => String(p.id) === String(priorityId));
+    return priority?.name || String(priorityId);
   };
-  
-  const getTypeName = (typeId: string) => {
-    const type = types.find(t => t.id === typeId);
-    return type?.name || typeId;
+
+  const getTypeName = (typeId: string | number) => {
+    const type = types.find(t => String(t.id) === String(typeId));
+    return type?.name || String(typeId);
   };
-  
-  const getAreaName = (areaId: string) => {
-    const area = areas.find(a => a.id === areaId);
-    return area?.name || areaId;
+
+  const getAreaName = (areaId: string | number) => {
+    const area = areas.find(a => String(a.id) === String(areaId));
+    return area?.name || String(areaId);
   };
   
   const statusOpen = statuses.find(s => s.name === "Abierto")?.id || "status-001";
@@ -60,8 +66,8 @@ export default function DashboardPage() {
       change: "+12.5%",
       trend: "up",
       icon: BarChart3,
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
     },
     {
       title: t.incidents.stats.open,
@@ -69,8 +75,8 @@ export default function DashboardPage() {
       change: openCount > 0 ? "Requiere atención" : "Todo bien",
       trend: openCount > 0 ? "down" : "up",
       icon: AlertTriangle,
-      color: "text-red-500",
-      bgColor: "bg-red-500/10",
+      color: "text-destructive",
+      bgColor: "bg-destructive/10",
     },
     {
       title: t.incidents.stats.inProgress,
@@ -78,8 +84,8 @@ export default function DashboardPage() {
       change: "En resolución",
       trend: "up",
       icon: Clock,
-      color: "text-yellow-500",
-      bgColor: "bg-yellow-500/10",
+      color: "text-accent",
+      bgColor: "bg-accent/10",
     },
     {
       title: t.incidents.stats.closed,
@@ -87,20 +93,68 @@ export default function DashboardPage() {
       change: `${stats.total > 0 ? ((closedCount / stats.total) * 100).toFixed(1) : 0}% resueltos`,
       trend: "up",
       icon: CheckCircle2,
-      color: "text-green-500",
-      bgColor: "bg-green-500/10",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
     },
   ];
 
+  // Información de acciones según rol
+  const getRoleActions = (role: Role | string | undefined) => {
+    switch (role) {
+      case Role.ADMIN:
+        return [
+          { icon: Shield, label: t.dashboard.actions.manageUsers, color: "text-destructive" },
+          { icon: Users, label: t.nav.usuarios, color: "text-primary" },
+          { icon: ClipboardList, label: t.incidents.newIncident, color: "text-accent" },
+          { icon: BarChart3, label: t.nav.reportes, color: "text-primary" },
+        ];
+      case Role.MANAGER:
+        return [
+          { icon: UserCheck, label: t.dashboard.actions.viewReports, color: "text-purple-500" },
+          { icon: Users, label: t.nav.usuarios, color: "text-primary" },
+          { icon: ClipboardList, label: t.incidents.newIncident, color: "text-accent" },
+          { icon: BarChart3, label: t.nav.reportes, color: "text-primary" },
+        ];
+      case Role.SUPERVISOR:
+        return [
+          { icon: UserCheck, label: t.nav.asignaciones, color: "text-primary" },
+          { icon: ClipboardList, label: t.incidents.newIncident, color: "text-accent" },
+          { icon: BarChart3, label: t.nav.reportes, color: "text-primary" },
+        ];
+      case Role.TECHNICIAN:
+        return [
+          { icon: CheckCircle2, label: t.dashboard.actions.resolveIncident, color: "text-accent" },
+          { icon: ClipboardList, label: t.nav.incidentes, color: "text-primary" },
+        ];
+      case Role.OPERATOR:
+        return [
+          { icon: AlertTriangle, label: t.incidents.reportIncident, color: "text-destructive" },
+          { icon: ClipboardList, label: t.incidents.myIncidents, color: "text-primary" },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const roleActions = getRoleActions(user?.role);
+  const roleLabel = getRoleLabel(user?.role, language);
+  const roleBadgeClass = getRoleColor(user?.role);
+
   return (
     <div className="space-y-8">
+      {/* Header con info de rol */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-purple-500 bg-clip-text text-transparent">
-            Dashboard
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Bienvenido, {user?.name}
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-primary/80 bg-clip-text text-transparent">
+              Dashboard
+            </h1>
+            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${roleBadgeClass}`}>
+              {roleLabel}
+            </span>
+          </div>
+          <p className="text-muted-foreground">
+            Bienvenido, {user?.firstName || user?.email}
           </p>
         </div>
         <div className="flex gap-2">
@@ -110,12 +164,14 @@ export default function DashboardPage() {
               {t.incidents.newIncident}
             </Button>
           </Link>
-          <Link href="/dashboard/canvas">
-            <Button variant="outline">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              {t.incidents.analytics}
-            </Button>
-          </Link>
+          {(user?.role === Role.ADMIN || user?.role === Role.MANAGER || user?.role === Role.SUPERVISOR) && (
+            <Link href="/dashboard/canvas">
+              <Button variant="outline">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                {t.incidents.analytics}
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -139,9 +195,9 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center gap-2 mt-4">
               {stat.trend === "up" ? (
-                <ArrowUpRight className="w-4 h-4 text-green-500" />
+                <ArrowUpRight className="w-4 h-4 text-primary" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-yellow-500" />
+                <AlertCircle className="w-4 h-4 text-accent" />
               )}
               <span className="text-sm text-muted-foreground">
                 {stat.change}
@@ -150,6 +206,35 @@ export default function DashboardPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* Acciones según rol */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border border-border rounded-xl p-6"
+      >
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Shield className="w-5 h-5 text-primary" />
+          {t.dashboard.rolePermissions} {t.dashboard.as} {roleLabel}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {roleActions.map((action, index) => (
+            <motion.div
+              key={action.label}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 + index * 0.1 }}
+              className="flex items-center gap-3 p-3 bg-card/50 rounded-lg border border-border/50"
+            >
+              <div className={`p-2 rounded-lg bg-background ${action.color}`}>
+                <action.icon className="w-4 h-4" />
+              </div>
+              <span className="text-sm font-medium">{action.label}</span>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div
@@ -185,33 +270,33 @@ export default function DashboardPage() {
                     <div
                       className={`p-2 rounded-lg ${
                         incident.id_status === statusOpen
-                          ? "bg-red-500/10"
+                          ? "bg-destructive/10"
                           : incident.id_status === statusInProgress
-                          ? "bg-yellow-500/10"
-                          : "bg-green-500/10"
+                          ? "bg-accent/10"
+                          : "bg-primary/10"
                       }`}
                     >
                       {incident.id_status === statusOpen ? (
-                        <AlertTriangle className="w-4 h-4 text-red-500" />
+                        <AlertTriangle className="w-4 h-4 text-destructive" />
                       ) : incident.id_status === statusInProgress ? (
-                        <Clock className="w-4 h-4 text-yellow-500" />
+                        <Clock className="w-4 h-4 text-accent" />
                       ) : (
-                        <CheckCircle2 className="w-4 h-4 text-green-500" />
+                        <CheckCircle2 className="w-4 h-4 text-primary" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{incident.title}</p>
                       <p className="text-sm text-muted-foreground">
-                        {getTypeName(incident.id_type)} - {getAreaName(incident.id_area)}
+                        {getTypeName(incident.id_type || "")} - {getAreaName(incident.id_area || "")}
                       </p>
                     </div>
                   </div>
                   <div className="text-right ml-4">
                     <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                      {getPriorityName(incident.id_priority)}
+                      {getPriorityName(incident.id_priority || "")}
                     </span>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {new Date(incident.opening_date).toLocaleDateString(language)}
+                      {new Date(incident.opening_date || incident.fechaCreacion || incident.createdAt || Date.now().toString()).toLocaleDateString(language)}
                     </p>
                   </div>
                 </motion.div>

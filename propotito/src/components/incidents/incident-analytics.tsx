@@ -118,10 +118,10 @@ export function IncidentAnalytics({ stats }: IncidentAnalyticsProps) {
           <CardContent className="space-y-3">
             {Object.entries(stats.porPrioridad).map(([prioridad, count]) => {
               const colors = {
-                baja: "bg-blue-500",
-                media: "bg-yellow-500",
-                alta: "bg-orange-500",
-                critica: "bg-red-500",
+                baja: "bg-muted",
+                media: "bg-accent",
+                alta: "bg-primary",
+                critica: "bg-destructive",
               };
               return (
                 <div key={prioridad} className="space-y-1">

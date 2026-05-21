@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { incidentsApi, statusApi, prioritiesApi, typesApi } from '@/api';
-import type { Incident, Status, Priority, Type } from '@/api/types';
+import type { IncidentResponseDTO as Incident, IncidentRequestDTO, Status, PriorityLegacy as Priority, Type } from '@/api/types';
 
 interface IncidentsState {
   incidents: Incident[];
@@ -19,8 +19,8 @@ interface IncidentsState {
   getStatusById: (id: string) => Status | undefined;
   getPriorityById: (id: string) => Priority | undefined;
   getTypeById: (id: string) => Type | undefined;
-  createIncident: (incident: Partial<Incident>) => Promise<Incident>;
-  updateIncident: (id: string, data: Partial<Incident>) => Promise<Incident>;
+  createIncident: (incident: IncidentRequestDTO) => Promise<Incident>;
+  // updateIncident: (id: string, data: Partial<Incident>) => Promise<Incident>;
   assignIncident: (id: string, technicalId: string, supervisorId: string) => Promise<Incident>;
   closeIncident: (id: string, solution: string, rootCause: string) => Promise<Incident>;
   deleteIncident: (id: string) => Promise<void>;
@@ -87,22 +87,22 @@ export const useIncidentsStore = create<IncidentsState>()(
       },
 
       getIncidentById: (id: string) => {
-        return get().incidents.find(incident => incident.id === id);
+        return get().incidents.find(incident => String(incident.id) === id);
       },
 
-      getStatusById: (id: string) => {
-        return get().statuses.find(status => status.id === id);
+      getStatusById: (id: string | number) => {
+        return get().statuses.find(status => String(status.id) === String(id));
       },
 
-      getPriorityById: (id: string) => {
-        return get().priorities.find(priority => priority.id === id);
+      getPriorityById: (id: string | number) => {
+        return get().priorities.find(priority => String(priority.id) === String(id));
       },
 
-      getTypeById: (id: string) => {
-        return get().types.find(type => type.id === id);
+      getTypeById: (id: string | number) => {
+        return get().types.find(type => String(type.id) === String(id));
       },
 
-      createIncident: async (incidentData: Partial<Incident>) => {
+      createIncident: async (incidentData: IncidentRequestDTO) => {
         set({ loading: true, error: null });
         try {
           const newIncident = await incidentsApi.create(incidentData);
@@ -117,34 +117,19 @@ export const useIncidentsStore = create<IncidentsState>()(
         }
       },
 
-      updateIncident: async (id: string, data: Partial<Incident>) => {
-        set({ loading: true, error: null });
-        try {
-          const updatedIncident = await incidentsApi.update(id, data);
-          set(state => ({
-            incidents: state.incidents.map(incident => 
-              incident.id === id ? updatedIncident : incident
-            ),
-            loading: false,
-          }));
-          return updatedIncident;
-        } catch (error) {
-          set({ error: 'Error al actualizar incidente', loading: false });
-          throw error;
-        }
-      },
+      // Nota: updateIncident no está disponible en el API actual
+      // updateIncident: async (id: string, data: Partial<Incident>) => { ... },
 
       assignIncident: async (id: string, technicalId: string, supervisorId: string) => {
         set({ loading: true, error: null });
         try {
-          const updatedIncident = await incidentsApi.assign(id, technicalId, supervisorId);
-          set(state => ({
-            incidents: state.incidents.map(incident => 
-              incident.id === id ? updatedIncident : incident
-            ),
-            loading: false,
-          }));
-          return updatedIncident;
+          // Usar assignmentsApi para asignar técnico
+          const { assignmentsApi } = await import('@/api');
+          await assignmentsApi.assign(Number(id), { technicianId: Number(technicalId), supervisorId: Number(supervisorId) });
+          // Recargar incidentes para obtener el estado actualizado
+          const incidents = await incidentsApi.getAll();
+          set({ incidents, loading: false });
+          return incidents.find(i => String(i.id) === id)!;
         } catch (error) {
           set({ error: 'Error al asignar incidente', loading: false });
           throw error;
@@ -154,14 +139,12 @@ export const useIncidentsStore = create<IncidentsState>()(
       closeIncident: async (id: string, solution: string, rootCause: string) => {
         set({ loading: true, error: null });
         try {
-          const updatedIncident = await incidentsApi.close(id, solution, rootCause);
-          set(state => ({
-            incidents: state.incidents.map(incident => 
-              incident.id === id ? updatedIncident : incident
-            ),
-            loading: false,
-          }));
-          return updatedIncident;
+          // El API usa "resolve" en lugar de "close"
+          await incidentsApi.resolve(Number(id));
+          // Recargar incidentes para obtener el estado actualizado
+          const incidents = await incidentsApi.getAll();
+          set({ incidents, loading: false });
+          return incidents.find(i => String(i.id) === id)!;
         } catch (error) {
           set({ error: 'Error al cerrar incidente', loading: false });
           throw error;
@@ -169,44 +152,35 @@ export const useIncidentsStore = create<IncidentsState>()(
       },
 
       deleteIncident: async (id: string) => {
-        set({ loading: true, error: null });
-        try {
-          await incidentsApi.delete(id);
-          set(state => ({
-            incidents: state.incidents.filter(incident => incident.id !== id),
-            loading: false,
-          }));
-        } catch (error) {
-          set({ error: 'Error al eliminar incidente', loading: false });
-          throw error;
-        }
+        // Nota: delete no está disponible en el API actual
+        console.warn('Delete incident not available in API');
+        return;
       },
 
       getIncidentStats: () => {
         const incidents = get().incidents;
         const total = incidents.length;
-        const abiertos = incidents.filter(i => i.id_status === 'status-001').length;
-        const enProceso = incidents.filter(i => i.id_status === 'status-002').length;
-        const cerrados = incidents.filter(i => i.id_status === 'status-003').length;
+        // Usar el enum Status en lugar de id_status
+        const abiertos = incidents.filter(i => i.status === 'OPEN').length;
+        const enProceso = incidents.filter(i => i.status === 'IN_PROGRESS').length;
+        const cerrados = incidents.filter(i => i.status === 'RESOLVED' || i.status === 'CLOSED').length;
 
+        // Usar category como área (mapeo simple)
         const porArea: Record<string, number> = {};
         const porTipo: Record<string, number> = {};
         const porPrioridad: Record<string, number> = {};
 
         incidents.forEach(incident => {
-          porArea[incident.id_area] = (porArea[incident.id_area] || 0) + 1;
-          porTipo[incident.id_type] = (porTipo[incident.id_type] || 0) + 1;
-          porPrioridad[incident.id_priority] = (porPrioridad[incident.id_priority] || 0) + 1;
+          const type = incident.type || 'OTHER';
+          const area = incident.areaId ? String(incident.areaId) : 'OTHER';
+          porArea[area] = (porArea[area] || 0) + 1;
+          porTipo[type] = (porTipo[type] || 0) + 1;
+          const priority = incident.priority || 'MEDIUM';
+          porPrioridad[priority] = (porPrioridad[priority] || 0) + 1;
         });
 
-        const incidentesCerrados = incidents.filter(i => i.close_date);
-        const tiempoPromedioResolucion = incidentesCerrados.length > 0
-          ? incidentesCerrados.reduce((acc, incident) => {
-              const opening = new Date(incident.opening_date).getTime();
-              const closing = new Date(incident.close_date!).getTime();
-              return acc + (closing - opening) / (1000 * 60);
-            }, 0) / incidentesCerrados.length
-          : 0;
+        // No hay resolvedAt en el API actual - usar placeholder
+        const tiempoPromedioResolucion = 0;
 
         return {
           total,

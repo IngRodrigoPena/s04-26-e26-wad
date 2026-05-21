@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Incident, useIncidentStore, useI18nStore } from "@/lib/store";
 import { useTranslation } from "@/lib/i18n";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 interface CloseIncidentDialogProps {
   incident: Incident;
@@ -39,7 +39,7 @@ export function CloseIncidentDialog({
       return;
     }
 
-    closeIncident(incident.id, solucion, causaRaiz || undefined);
+    closeIncident(String(incident.id), solucion, causaRaiz || "");
     toast.success(t.incidents.messages.incidentClosed);
     onOpenChange(false);
     setSolucion("");
@@ -63,7 +63,7 @@ export function CloseIncidentDialog({
           <div className="p-4 rounded-lg bg-muted space-y-2">
             <p className="text-sm font-medium">{incident.titulo}</p>
             <p className="text-xs text-muted-foreground">
-              {t.incidents.type[incident.tipo]} - {t.incidents.area[incident.area]}
+              {incident.tipo || "otro"} - {incident.area || "produccion"}
             </p>
           </div>
 
@@ -102,7 +102,7 @@ export function CloseIncidentDialog({
               {t.incidents.actions.cancel}
             </Button>
             <Button
-              className="flex-1 bg-green-500 hover:bg-green-600"
+              className="flex-1"
               onClick={handleClose}
             >
               {t.incidents.actions.close}

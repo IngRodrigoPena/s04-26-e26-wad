@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Incident, useIncidentStore, useI18nStore } from "@/lib/store";
 import { useTranslation } from "@/lib/i18n";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 interface AssignIncidentDialogProps {
   incident: Incident;
@@ -54,7 +54,7 @@ export function AssignIncidentDialog({
 
     const tecnico = tecnicos.find((t) => t.id === selectedTecnico);
     if (tecnico) {
-      assignIncident(incident.id, tecnico.id, tecnico.nombre);
+      assignIncident(String(incident.id), String(tecnico.id), "supervisor-001"); // TODO: Obtener supervisorId del usuario actual
       toast.success(t.incidents.messages.incidentAssigned);
       onOpenChange(false);
       setSelectedTecnico("");
@@ -78,7 +78,7 @@ export function AssignIncidentDialog({
           <div className="p-4 rounded-lg bg-muted space-y-2">
             <p className="text-sm font-medium">{incident.titulo}</p>
             <p className="text-xs text-muted-foreground">
-              {t.incidents.type[incident.tipo]} - {t.incidents.area[incident.area]}
+              {incident.tipo || "otro"} - {incident.area || "produccion"}
             </p>
           </div>
 

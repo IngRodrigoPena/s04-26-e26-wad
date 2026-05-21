@@ -27,8 +27,10 @@ export function HeatmapChart({ incidents }: HeatmapChartProps) {
   });
 
   incidents.forEach((incident) => {
-    if (heatmapData[incident.area] && heatmapData[incident.area][incident.tipo] !== undefined) {
-      heatmapData[incident.area][incident.tipo]++;
+    const areaKey = incident.area || "produccion";
+    const tipoKey = incident.tipo || "otro";
+    if (heatmapData[areaKey] && heatmapData[areaKey][tipoKey] !== undefined) {
+      heatmapData[areaKey][tipoKey]++;
     }
   });
 

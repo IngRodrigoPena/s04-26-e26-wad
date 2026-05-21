@@ -9,7 +9,7 @@ import {
   typesApi,
   companiesApi 
 } from "@/api";
-import type { Role, Area, Status, Priority, Type, Company } from "@/api/types";
+import type { RoleEntity as Role, Area, Status, PriorityLegacy as Priority, Type, Company } from "@/api/types";
 
 interface CatalogsState {
   roles: Role[];
@@ -132,27 +132,27 @@ export const useCatalogsStore = create<CatalogsState>((set, get) => ({
     }
   },
 
-  getRoleById: (id: string) => {
-    return get().roles.find(role => role.id === id);
+  getRoleById: (id: string | number) => {
+    return get().roles.find(role => String(role.id) === String(id));
   },
 
-  getAreaById: (id: string) => {
-    return get().areas.find(area => area.id === id);
+  getAreaById: (id: string | number) => {
+    return get().areas.find(area => String(area.id) === String(id));
   },
 
-  getStatusById: (id: string) => {
-    return get().statuses.find(status => status.id === id);
+  getStatusById: (id: string | number) => {
+    return get().statuses.find(status => String(status.id) === String(id));
   },
 
-  getPriorityById: (id: string) => {
-    return get().priorities.find(priority => priority.id === id);
+  getPriorityById: (id: string | number) => {
+    return get().priorities.find(priority => String(priority.id) === String(id));
   },
 
-  getTypeById: (id: string) => {
-    return get().types.find(type => type.id === id);
+  getTypeById: (id: string | number) => {
+    return get().types.find(type => String(type.id) === String(id));
   },
 
-  getCompanyById: (id: string) => {
-    return get().companies.find(company => company.id === id);
+  getCompanyById: (id: string | number) => {
+    return get().companies.find(company => String(company.id) === String(id));
   },
 }));

@@ -31,12 +31,13 @@ export const useReportsStore = create<ReportsState>()(
         }
       },
 
-      getReportById: (id: string) => {
-        return get().reports.find(report => report.id === id);
+      getReportById: (id: string | number) => {
+        return get().reports.find(report => String(report.id) === String(id));
       },
 
-      getReportsByIncidentId: (incidentId: string) => {
-        return get().reports.filter(report => report.id_incident === incidentId);
+      getReportsByIncidentId: (_incidentId: string | number) => {
+        // TODO: Implementar cuando el API de reportes esté disponible
+        return [];
       },
 
       createReport: async (reportData: Partial<Report>) => {

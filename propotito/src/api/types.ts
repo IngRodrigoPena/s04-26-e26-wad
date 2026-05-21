@@ -1,132 +1,60 @@
-export interface User {
-  id: string;
-  avatar: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  id_role: string;
-  id_area: string;
-  id_company: string;
-  is_active: boolean;
-  created_by: string;
-  updated_by: string;
-  created_at: string;
-  updated_at: string;
-}
+// ARCHIVO DE COMPATIBILIDAD TEMPORAL
+// TODO: Migrar todos los imports a los módulos específicos y eliminar este archivo
 
-export interface Role {
-  id: string;
+// Re-exportar desde módulos organizados
+export * from './auth/types';
+export * from './incidents/types';
+export * from './assignments/types';
+export * from './common/types';
+
+// Legacy exports - mantener por compatibilidad
+// Estos tipos no existen en el backend actual pero se usan en código legacy
+export interface RoleEntity {
+  id: number;
   name: string;
   description: string;
-  icon: string;
-  color: string;
-  is_active: boolean;
-  created_by: string;
-  updated_by: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface Company {
-  id: string;
+  id: number;
   name: string;
-  logo: string;
   description: string;
-  is_active: boolean;
-  created_by: string;
-  updated_by: string;
-  created_at: string;
-  updated_at: string;
+  active: boolean;
 }
 
 export interface Area {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  icon: string;
-  color: string;
-  is_active: boolean;
-  created_by: string;
-  updated_by: string;
-  created_at: string;
-  updated_at: string;
+  companyId: number;
+  active: boolean;
 }
 
 export interface Status {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  icon: string;
-  color: string;
-  is_active: boolean;
-  created_by: string;
-  updated_by: string;
-  created_at: string;
-  updated_at: string;
+  active: boolean;
 }
 
-export interface Priority {
-  id: string;
+export interface PriorityLegacy {
+  id: number;
   name: string;
   description: string;
-  icon: string;
-  color: string;
-  is_active: boolean;
-  created_by: string;
-  updated_by: string;
-  created_at: string;
-  updated_at: string;
+  level: number;
 }
 
 export interface Type {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  icon: string;
-  color: string;
-  is_active: boolean;
-  created_by: string;
-  updated_by: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Incident {
-  id: string;
-  id_type: string;
-  id_supervisor: string | null;
-  id_technical: string | null;
-  id_area: string;
-  title: string;
-  description: string;
-  id_status: string;
-  id_priority: string;
-  location: string;
-  opening_date: string;
-  close_date: string | null;
-  solution: string | null;
-  root_cause: string | null;
-  anexos: string[];
-  is_active: boolean;
-  created_by: string;
-  updated_by: string;
-  created_at: string;
-  updated_at: string;
+  active: boolean;
 }
 
 export interface Report {
-  id: string;
-  id_incident: string;
-  root_cause: string;
-  report: string;
-  id_priority: string;
-  opening_date: string;
-  close_date: string;
-  anexos: string[];
-  veracidad: string;
-  is_active: boolean;
-  created_by: string;
-  updated_by: string;
-  created_at: string;
-  updated_at: string;
+  id: number;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
 }

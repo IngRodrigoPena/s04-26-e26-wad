@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { usersApi, rolesApi, companiesApi, areasApi } from '@/api';
-import type { User, Role, Company, Area } from '@/api/types';
+import type { UserResponseDTO as User, RoleEntity as Role, Company, Area, CreateUserRequestDTO } from '@/api/types';
 
 interface UsersState {
   users: User[];
@@ -18,9 +18,9 @@ interface UsersState {
   getUserById: (id: string) => User | undefined;
   getRoleById: (id: string) => Role | undefined;
   getAreaById: (id: string) => Area | undefined;
-  createUser: (user: Partial<User>) => Promise<User>;
-  updateUser: (id: string, data: Partial<User>) => Promise<User>;
-  deleteUser: (id: string) => Promise<void>;
+  createUser: (user: CreateUserRequestDTO) => Promise<User>;
+  // updateUser: (id: string, data: Partial<User>) => Promise<User>;
+  // deleteUser: (id: string) => Promise<void>;
 }
 
 export const useUsersStore = create<UsersState>()(
@@ -37,7 +37,7 @@ export const useUsersStore = create<UsersState>()(
         set({ loading: true, error: null });
         try {
           const users = await usersApi.getAll();
-          set({ users, loading: false });
+          set({ users: users as User[], loading: false });
         } catch (error) {
           set({ error: 'Error al cargar usuarios', loading: false });
         }
@@ -74,62 +74,35 @@ export const useUsersStore = create<UsersState>()(
       },
 
       getUserById: (id: string) => {
-        return get().users.find(user => user.id === id);
+        return get().users.find(user => String(user.id) === id);
       },
 
-      getRoleById: (id: string) => {
-        return get().roles.find(role => role.id === id);
+      getRoleById: (id: string | number) => {
+        return get().roles.find(role => String(role.id) === String(id));
       },
 
-      getAreaById: (id: string) => {
-        return get().areas.find(area => area.id === id);
+      getAreaById: (id: string | number) => {
+        return get().areas.find(area => String(area.id) === String(id));
       },
 
-      createUser: async (userData: Partial<User>) => {
+      createUser: async (userData: CreateUserRequestDTO) => {
         set({ loading: true, error: null });
         try {
           const newUser = await usersApi.create(userData);
           set(state => ({
-            users: [...state.users, newUser],
+            users: [...state.users, newUser as User],
             loading: false,
           }));
-          return newUser;
+          return newUser as User;
         } catch (error) {
           set({ error: 'Error al crear usuario', loading: false });
           throw error;
         }
       },
 
-      updateUser: async (id: string, data: Partial<User>) => {
-        set({ loading: true, error: null });
-        try {
-          const updatedUser = await usersApi.update(id, data);
-          set(state => ({
-            users: state.users.map(user => 
-              user.id === id ? updatedUser : user
-            ),
-            loading: false,
-          }));
-          return updatedUser;
-        } catch (error) {
-          set({ error: 'Error al actualizar usuario', loading: false });
-          throw error;
-        }
-      },
-
-      deleteUser: async (id: string) => {
-        set({ loading: true, error: null });
-        try {
-          await usersApi.delete(id);
-          set(state => ({
-            users: state.users.filter(user => user.id !== id),
-            loading: false,
-          }));
-        } catch (error) {
-          set({ error: 'Error al eliminar usuario', loading: false });
-          throw error;
-        }
-      },
+      // Nota: updateUser y deleteUser no están disponibles en el API actual
+      // updateUser: async (id: string, data: Partial<User>) => { ... },
+      // deleteUser: async (id: string) => { ... },
     }),
     {
       name: 'users-storage',

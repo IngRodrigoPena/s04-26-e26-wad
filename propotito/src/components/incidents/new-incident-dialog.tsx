@@ -30,7 +30,7 @@ import {
   IncidentPriority,
 } from "@/lib/store";
 import { useTranslation } from "@/lib/i18n";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 interface NewIncidentDialogProps {
   open: boolean;
@@ -62,8 +62,8 @@ export function NewIncidentDialog({ open, onOpenChange }: NewIncidentDialogProps
 
     addIncident({
       ...formData,
-      reportadoPor: user?.id || "",
-      reportadoPorNombre: user?.name || "",
+      reportadoPor: String(user?.id || ""),
+      reportadoPorNombre: user?.firstName || "",
     });
 
     toast.success(t.incidents.messages.incidentCreated);

@@ -2,196 +2,160 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useIncidentsStore as useIncidentsStoreNew, useAuthStore } from "@/stores";
+import type { IncidentResponseDTO, Priority, IncidentStatus as BackendStatus, IncidentType as BackendIncidentType } from "@/api/incidents/types";
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: "operario" | "supervisor" | "gerente";
-}
+// Re-exportar los stores reales desde stores/
+export { useAuthStore } from "@/stores/auth-store";
+// export { useIncidentsStore as useIncidentStore } from "@/stores/incidents-store-new";
+export type { Role, UserResponseDTO as User } from "@/api/types";
 
-interface AuthState {
-  isAuthenticated: boolean;
-  user: User | null;
-  login: (user: User) => void;
-  logout: () => void;
-}
+// Exportar store legacy para mantener compatibilidad con componentes existentes
+export { useIncidentsStore as useIncidentStore } from "@/lib/stores/incidents-store";
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      isAuthenticated: false,
-      user: null,
-      login: (user) => set({ isAuthenticated: true, user }),
-      logout: () => set({ isAuthenticated: false, user: null }),
-    }),
-    {
-      name: "propotito-auth",
-    }
-  )
-);
+// Tipos para el sistema de incidentes (legacy - migrar gradualmente)
+export type IncidentStatusLegacy = "abierto" | "asignado" | "en_proceso" | "en_espera" | "resuelto" | "cerrado" | "cancelado";
+export type IncidentTypeLegacy = "falla_maquina" | "accidente" | "desviacion_calidad" | "otro";
+export type IncidentPriorityLegacy = "baja" | "media" | "alta" | "critica";
+export type IncidentAreaLegacy = "produccion" | "mantenimiento" | "calidad" | "seguridad" | "logistica";
 
-// Tipos para el sistema de incidentes
-export type IncidentStatus = "abierto" | "en_proceso" | "cerrado";
-export type IncidentType = "falla_maquina" | "accidente" | "desviacion_calidad" | "otro";
-export type IncidentPriority = "baja" | "media" | "alta" | "critica";
-export type IncidentArea = "produccion" | "mantenimiento" | "calidad" | "seguridad" | "logistica";
+// Re-exportar con nombres legacy para compatibilidad
+export type IncidentStatus = IncidentStatusLegacy;
+export type IncidentType = IncidentTypeLegacy;
+export type IncidentPriority = IncidentPriorityLegacy;
+export type IncidentArea = IncidentAreaLegacy;
 
+// Tipo unificado para incidentes - combina DTO del API con legacy
+// El id puede ser string o number según la fuente
 export interface Incident {
-  id: string;
-  tipo: IncidentType;
-  area: IncidentArea;
-  prioridad: IncidentPriority;
-  titulo: string;
-  descripcion: string;
-  estado: IncidentStatus;
-  reportadoPor: string;
-  reportadoPorNombre: string;
+  id: string | number;
+  // Campos DTO API
+  title?: string;
+  description?: string;
+  status?: IncidentStatusLegacy;
+  priority?: Priority;
+  type?: BackendIncidentType;  // Usa enum nuevo del API
+  createdAt?: string;
+  resolvedAt?: string;
+  // Campos legacy
+  tipo?: IncidentTypeLegacy;  // Usa tipo legacy
+  area?: IncidentArea;
+  prioridad?: IncidentPriority;
+  titulo?: string;
+  descripcion?: string;
+  estado?: IncidentStatus;
+  reportadoPor?: string;
+  reportadoPorNombre?: string;
   asignadoA?: string;
   asignadoANombre?: string;
   solucion?: string;
   causaRaiz?: string;
-  fechaCreacion: string;
+  fechaCreacion?: string;
   fechaAsignacion?: string;
   fechaCierre?: string;
-  tiempoResolucion?: number; // en minutos
+  tiempoResolucion?: number;
   ubicacion?: string;
   imagenes?: string[];
+  // Campos adicionales para compatibilidad con dashboard
+  id_status?: string;
+  id_type?: string;
+  id_area?: string;
+  id_priority?: string;
+  opening_date?: string;
+  // Campos técnicos
+  id_technical?: string;
+  id_supervisor?: string;
+  technicalName?: string;
+  reportedByUserId?: number;
+  assignedUserId?: number;
+  // Estado
+  is_active?: boolean;
+  // Fechas adicionales
+  close_date?: string;
 }
 
-interface IncidentState {
-  incidents: Incident[];
-  addIncident: (incident: Omit<Incident, "id" | "fechaCreacion" | "estado">) => void;
-  updateIncident: (id: string, updates: Partial<Incident>) => void;
-  assignIncident: (id: string, tecnicoId: string, tecnicoNombre: string) => void;
-  closeIncident: (id: string, solucion: string, causaRaiz?: string) => void;
-  getIncidentsByStatus: (status: IncidentStatus) => Incident[];
-  getIncidentsByArea: (area: IncidentArea) => Incident[];
-  getIncidentStats: () => {
-    total: number;
-    abiertos: number;
-    enProceso: number;
-    cerrados: number;
-    tiempoPromedioResolucion: number;
-    porTipo: Record<IncidentType, number>;
-    porArea: Record<IncidentArea, number>;
-    porPrioridad: Record<IncidentPriority, number>;
+// Mapper para convertir IncidentResponseDTO a Incident (formato legacy)
+const mapToLegacyIncident = (inc: IncidentResponseDTO): Incident => ({
+  id: String(inc.id),
+  tipo: "otro" as IncidentType,
+  area: "produccion" as IncidentArea,
+  prioridad: (mapPriorityToLegacy(inc.priority)) as IncidentPriority,
+  titulo: inc.title,
+  descripcion: inc.description,
+  estado: (mapStatusToLegacy(inc.status)) as IncidentStatus,
+  reportadoPor: "",
+  reportadoPorNombre: "",
+  fechaCreacion: inc.createdAt,
+  fechaCierre: undefined,
+});
+
+function mapPriorityToLegacy(p: Priority): string {
+  const map: Record<Priority, string> = {
+    LOW: "baja",
+    MEDIUM: "media",
+    HIGH: "alta",
+    CRITICAL: "critica",
   };
+  return map[p] || "media";
 }
 
-export const useIncidentStore = create<IncidentState>()(
-  persist(
-    (set, get) => ({
-      incidents: [],
-      
-      addIncident: (incident) => {
-        const newIncident: Incident = {
-          ...incident,
-          id: `INC-${Date.now()}`,
-          estado: "abierto",
-          fechaCreacion: new Date().toISOString(),
-        };
-        set((state) => ({ incidents: [...state.incidents, newIncident] }));
-      },
+function mapStatusToLegacy(s: BackendStatus): string {
+  const map: Record<BackendStatus, string> = {
+    OPEN: "abierto",
+    ASSIGNED: "asignado",
+    IN_PROGRESS: "en_proceso",
+    ON_HOLD: "en_espera",
+    RESOLVED: "resuelto",
+    CLOSED: "cerrado",
+    CANCELED: "cancelado",
+  };
+  return map[s] || "abierto";
+}
 
-      updateIncident: (id, updates) => {
-        set((state) => ({
-          incidents: state.incidents.map((inc) =>
-            inc.id === id ? { ...inc, ...updates } : inc
-          ),
-        }));
-      },
+// Hook helper para obtener incidentes en formato legacy
+export const useLegacyIncidents = () => {
+  const incidents = useIncidentsStoreNew((state) => state.incidents);
+  return incidents.map(mapToLegacyIncident);
+};
 
-      assignIncident: (id, tecnicoId, tecnicoNombre) => {
-        set((state) => ({
-          incidents: state.incidents.map((inc) =>
-            inc.id === id
-              ? {
-                  ...inc,
-                  estado: "en_proceso" as IncidentStatus,
-                  asignadoA: tecnicoId,
-                  asignadoANombre: tecnicoNombre,
-                  fechaAsignacion: new Date().toISOString(),
-                }
-              : inc
-          ),
-        }));
-      },
+// Función para convertir incidentes al formato legacy
+export const toLegacyIncidents = (incidents: IncidentResponseDTO[]): Incident[] =>
+  incidents.map(mapToLegacyIncident);
 
-      closeIncident: (id, solucion, causaRaiz) => {
-        set((state) => ({
-          incidents: state.incidents.map((inc) => {
-            if (inc.id === id) {
-              const fechaCierre = new Date().toISOString();
-              const tiempoResolucion = Math.floor(
-                (new Date(fechaCierre).getTime() -
-                  new Date(inc.fechaCreacion).getTime()) /
-                  60000
-              );
-              return {
-                ...inc,
-                estado: "cerrado" as IncidentStatus,
-                solucion,
-                causaRaiz,
-                fechaCierre,
-                tiempoResolucion,
-              };
-            }
-            return inc;
-          }),
-        }));
-      },
+// Función helper para saneincident con valores por defecto seguros
+// Usar en componentes que necesitan campos guaranteed
+export const sanitizeIncident = (inc: any): Incident => ({
+  id: inc.id ?? 0,
+  title: inc.title ?? inc.titulo ?? "",
+  description: inc.description ?? inc.descripcion ?? "",
+  status: inc.status,
+  priority: inc.priority,
+  type: inc.type,
+  createdAt: inc.createdAt ?? inc.fechaCreacion ?? "",
+  resolvedAt: inc.fechaCierre,
+  // Legacy fields
+  tipo: inc.tipo ?? "otro",
+  area: inc.area ?? "produccion",
+  prioridad: inc.prioridad ?? "media",
+  titulo: inc.titulo ?? inc.title ?? "",
+  descripcion: inc.descripcion ?? inc.description ?? "",
+  estado: inc.estado ?? "abierto",
+  reportadoPor: inc.reportadoPor ?? "",
+  reportadoPorNombre: inc.reportadoPorNombre ?? "",
+  fechaCreacion: inc.fechaCreacion ?? inc.createdAt ?? "",
+  fechaCierre: inc.fechaCierre,
+  opening_date: inc.opening_date ?? inc.fechaCreacion ?? "",
+  id_status: inc.id_status ?? "",
+  id_type: inc.id_type ?? "",
+  id_area: inc.id_area ?? "",
+  id_priority: inc.id_priority ?? "",
+});
 
-      getIncidentsByStatus: (status) => {
-        return get().incidents.filter((inc) => inc.estado === status);
-      },
-
-      getIncidentsByArea: (area) => {
-        return get().incidents.filter((inc) => inc.area === area);
-      },
-
-      getIncidentStats: () => {
-        const incidents = get().incidents;
-        const cerrados = incidents.filter((inc) => inc.estado === "cerrado");
-        
-        const tiempoPromedioResolucion =
-          cerrados.length > 0
-            ? cerrados.reduce((acc, inc) => acc + (inc.tiempoResolucion || 0), 0) /
-              cerrados.length
-            : 0;
-
-        const porTipo = incidents.reduce((acc, inc) => {
-          acc[inc.tipo] = (acc[inc.tipo] || 0) + 1;
-          return acc;
-        }, {} as Record<IncidentType, number>);
-
-        const porArea = incidents.reduce((acc, inc) => {
-          acc[inc.area] = (acc[inc.area] || 0) + 1;
-          return acc;
-        }, {} as Record<IncidentArea, number>);
-
-        const porPrioridad = incidents.reduce((acc, inc) => {
-          acc[inc.prioridad] = (acc[inc.prioridad] || 0) + 1;
-          return acc;
-        }, {} as Record<IncidentPriority, number>);
-
-        return {
-          total: incidents.length,
-          abiertos: incidents.filter((inc) => inc.estado === "abierto").length,
-          enProceso: incidents.filter((inc) => inc.estado === "en_proceso").length,
-          cerrados: cerrados.length,
-          tiempoPromedioResolucion,
-          porTipo,
-          porArea,
-          porPrioridad,
-        };
-      },
-    }),
-    {
-      name: "propotito-incidents",
-    }
-  )
-);
+// Hook para obtener incidentes con campos saneados
+export const useSafeIncidents = () => {
+  const incidents = useIncidentsStoreNew((state) => state.incidents);
+  return incidents.map(sanitizeIncident);
+};
 
 // Tipos para i18n
 export type Language = "es" | "en" | "pt";
@@ -208,7 +172,7 @@ export const useI18nStore = create<I18nState>()(
       setLanguage: (language) => set({ language }),
     }),
     {
-      name: "propotito-i18n",
+      name: "opscore-i18n",
     }
   )
 );

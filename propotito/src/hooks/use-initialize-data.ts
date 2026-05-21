@@ -1,20 +1,29 @@
 import { useEffect } from 'react';
-import { useUsersStore, useIncidentsStore, useCatalogsStore } from '@/lib/stores';
+import { useAuthStore, useIncidentsStore, useUsersStore } from '@/stores';
 
 export function useInitializeData() {
-  const fetchUsers = useUsersStore(state => state.fetchUsers);
+  const { isAuthenticated, fetchCurrentUser } = useAuthStore();
   const fetchIncidents = useIncidentsStore(state => state.fetchIncidents);
-  const fetchCatalogs = useCatalogsStore(state => state.fetchAllCatalogs);
+  const fetchUsers = useUsersStore(state => state.fetchUsers);
 
   useEffect(() => {
     const initializeData = async () => {
-      await Promise.all([
-        fetchUsers(),
-        fetchIncidents(),
-        fetchCatalogs(),
-      ]);
+      if (!isAuthenticated) return;
+
+      try {
+        // Fetch current user data if not already loaded
+        await fetchCurrentUser();
+        
+        // Fetch initial data
+        await Promise.all([
+          fetchIncidents(),
+          fetchUsers(),
+        ]);
+      } catch (error) {
+        console.error('Error initializing data:', error);
+      }
     };
 
     initializeData();
-  }, [fetchUsers, fetchIncidents, fetchCatalogs]);
+  }, [isAuthenticated, fetchCurrentUser, fetchIncidents, fetchUsers]);
 }

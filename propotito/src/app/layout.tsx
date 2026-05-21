@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeWrapper } from "@/components/theme-wrapper";
 import { Toaster } from "@/components/ui/sonner";
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
-  title: "Propotito - Admin Panel",
-  description: "Admin panel with authentication",
+  title: "OpsCore - Sistema de Gestión de Incidentes",
+  description: "Plataforma integral para la gestión y seguimiento de incidentes operativos",
 };
 
 export default function RootLayout({
@@ -20,12 +20,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body className={`${inter.variable} antialiased`}>
-        <ThemeProvider defaultTheme="dark" storageKey="propotito-theme">
+    <html lang="es" suppressHydrationWarning className={inter.variable}>
+      <body className="min-h-screen bg-background text-foreground font-sans antialiased">
+        <ThemeWrapper
+          defaultTheme="dark"
+          storageKey="opscore-theme"
+        >
           {children}
           <Toaster />
-        </ThemeProvider>
+        </ThemeWrapper>
       </body>
     </html>
   );

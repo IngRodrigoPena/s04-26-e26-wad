@@ -19,7 +19,7 @@ public class AuthService {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new RuntimeException("Usuario no encontrado"));
+                        new com.opscore.exception.ResourceNotFoundException("Usuario no encontrado"));
 
         if (!user.isActive()) {
             throw new BadRequestException("User is disabled");

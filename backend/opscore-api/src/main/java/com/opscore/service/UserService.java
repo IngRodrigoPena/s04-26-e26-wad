@@ -97,6 +97,29 @@ public class UserService {
                 .toList();
     }
 
+    public UserResponseDTO getCurrentUser() {
+        String email = SecurityUtils.getCurrentUserEmail();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found")
+                );
+
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .role(user.getRole().getName())
+                .area(
+                        user.getArea() != null
+                                ? user.getArea().getName()
+                                : null
+                )
+                .isActive(user.isActive())
+                .avatar(user.getAvatar())
+                .build();
+    }
+
     public UserResponseDTO updateUserRole(
             Long userId,
             UpdateUserRoleDTO request

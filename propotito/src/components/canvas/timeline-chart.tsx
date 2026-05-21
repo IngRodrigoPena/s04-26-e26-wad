@@ -21,7 +21,8 @@ export function TimelineChart({ incidents }: TimelineChartProps) {
     const grouped: Record<string, { abiertos: number; cerrados: number }> = {};
 
     incidents.forEach((incident) => {
-      const date = new Date(incident.fechaCreacion).toLocaleDateString("es-ES", {
+      const fecha = incident.fechaCreacion || incident.createdAt || "";
+      const date = new Date(fecha).toLocaleDateString("es-ES", {
         month: "short",
         day: "numeric",
       });

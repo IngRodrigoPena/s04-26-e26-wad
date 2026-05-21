@@ -2,7 +2,9 @@
 
 import { create } from "zustand";
 import { usersApi } from "@/api";
-import type { User } from "@/api/types";
+import type { UserResponseDTO, CreateUserRequestDTO } from "@/api/types";
+
+type User = UserResponseDTO;
 
 interface UsersState {
   users: User[];
@@ -12,9 +14,10 @@ interface UsersState {
   // Actions
   fetchUsers: () => Promise<void>;
   getUserById: (id: string) => User | undefined;
-  createUser: (user: Omit<User, "id" | "created_at" | "updated_at">) => Promise<User>;
-  updateUser: (id: string, data: Partial<User>) => Promise<User>;
-  deleteUser: (id: string) => Promise<boolean>;
+  createUser: (user: CreateUserRequestDTO) => Promise<User>;
+  // Nota: updateUser y deleteUser no están disponibles en el API actual
+  // updateUser: (id: string, data: Partial<User>) => Promise<User>;
+  // deleteUser: (id: string) => Promise<boolean>;
   
   // Filters
   getUsersByRole: (roleId: string) => User[];
@@ -32,7 +35,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const users = await usersApi.getAll();
-      set({ users, isLoading: false });
+      set({ users: users as User[], isLoading: false });
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : "Error al cargar usuarios",
@@ -42,7 +45,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   },
 
   getUserById: (id: string) => {
-    return get().users.find(user => user.id === id);
+    return get().users.find(user => String(user.id) === id);
   },
 
   createUser: async (userData) => {
@@ -50,10 +53,10 @@ export const useUsersStore = create<UsersState>((set, get) => ({
     try {
       const newUser = await usersApi.create(userData);
       set(state => ({ 
-        users: [...state.users, newUser],
+        users: [...state.users, newUser as User],
         isLoading: false 
       }));
-      return newUser;
+      return newUser as User;
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : "Error al crear usuario",
@@ -63,57 +66,23 @@ export const useUsersStore = create<UsersState>((set, get) => ({
     }
   },
 
-  updateUser: async (id: string, data: Partial<User>) => {
-    set({ isLoading: true, error: null });
-    try {
-      const updatedUser = await usersApi.update(id, data);
-      set(state => ({
-        users: state.users.map(user => 
-          user.id === id ? updatedUser : user
-        ),
-        isLoading: false
-      }));
-      return updatedUser;
-    } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : "Error al actualizar usuario",
-        isLoading: false 
-      });
-      throw error;
-    }
-  },
-
-  deleteUser: async (id: string) => {
-    set({ isLoading: true, error: null });
-    try {
-      await usersApi.delete(id);
-      set(state => ({
-        users: state.users.filter(user => user.id !== id),
-        isLoading: false
-      }));
-      return true;
-    } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : "Error al eliminar usuario",
-        isLoading: false 
-      });
-      throw error;
-    }
-  },
+  // Nota: updateUser y deleteUser no están disponibles en el API actual
 
   getUsersByRole: (roleId: string) => {
-    return get().users.filter(user => user.id_role === roleId);
+    return get().users.filter(user => user.role === roleId);
   },
 
   getUsersByArea: (areaId: string) => {
-    return get().users.filter(user => user.id_area === areaId);
+    // Campo no disponible en UserResponseDTO
+    return [];
   },
 
   getUsersByCompany: (companyId: string) => {
-    return get().users.filter(user => user.id_company === companyId);
+    // Campo no disponible en UserResponseDTO
+    return [];
   },
 
   getActiveUsers: () => {
-    return get().users.filter(user => user.is_active);
+    return get().users.filter(user => user.active);
   },
 }));

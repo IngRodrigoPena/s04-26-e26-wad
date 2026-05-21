@@ -75,8 +75,8 @@ export default function IncidentsPage() {
       case "mis_incidentes":
         return incidents.filter(
           (inc) =>
-            inc.reportadoPor === user?.id ||
-            inc.asignadoA === user?.id
+            inc.reportadoPor === String(user?.id) ||
+            inc.asignadoA === String(user?.id)
         );
       default:
         return incidents;

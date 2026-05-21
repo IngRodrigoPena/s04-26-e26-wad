@@ -37,20 +37,24 @@ export function IncidentDetailsDialog({
   const t = useTranslation(language);
 
   const priorityConfig = {
-    baja: { color: "bg-blue-500", label: t.incidents.priority.baja },
-    media: { color: "bg-yellow-500", label: t.incidents.priority.media },
-    alta: { color: "bg-orange-500", label: t.incidents.priority.alta },
-    critica: { color: "bg-red-500", label: t.incidents.priority.critica },
+    baja: { color: "bg-muted", label: t.incidents.priority.baja },
+    media: { color: "bg-accent", label: t.incidents.priority.media },
+    alta: { color: "bg-primary", label: t.incidents.priority.alta },
+    critica: { color: "bg-destructive", label: t.incidents.priority.critica },
   };
 
-  const statusConfig = {
-    abierto: { color: "text-red-500", label: t.incidents.status.abierto },
-    en_proceso: { color: "text-yellow-500", label: t.incidents.status.en_proceso },
-    cerrado: { color: "text-green-500", label: t.incidents.status.cerrado },
+  const statusConfig: Record<string, { color: string; label: string }> = {
+    abierto: { color: "text-destructive", label: t.incidents.status.abierto },
+    asignado: { color: "text-purple-500", label: "Asignado" },
+    en_proceso: { color: "text-accent", label: t.incidents.status.en_proceso },
+    en_espera: { color: "text-orange-500", label: "En Espera" },
+    resuelto: { color: "text-green-500", label: "Resuelto" },
+    cerrado: { color: "text-primary", label: t.incidents.status.cerrado },
+    cancelado: { color: "text-gray-500", label: "Cancelado" },
   };
 
-  const priority = priorityConfig[incident.prioridad];
-  const status = statusConfig[incident.estado];
+  const priority = priorityConfig[incident.prioridad || "media"];
+  const status = statusConfig[incident.estado || "abierto"];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -91,7 +95,7 @@ export function IncidentDetailsDialog({
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">{t.incidents.fields.tipo}</p>
-                <p className="text-sm font-medium">{t.incidents.type[incident.tipo]}</p>
+                <p className="text-sm font-medium">{incident.tipo || "otro"}</p>
               </div>
             </div>
 
@@ -101,13 +105,13 @@ export function IncidentDetailsDialog({
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">{t.incidents.fields.area}</p>
-                <p className="text-sm font-medium">{t.incidents.area[incident.area]}</p>
+                <p className="text-sm font-medium">{incident.area || "produccion"}</p>
               </div>
             </div>
 
             {incident.ubicacion && (
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-purple-500/10">
+                <div className="p-2 rounded-lg bg-secondary">
                   <MapPin className="w-5 h-5 text-purple-500" />
                 </div>
                 <div>
@@ -118,7 +122,7 @@ export function IncidentDetailsDialog({
             )}
 
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-blue-500/10">
+              <div className="p-2 rounded-lg bg-muted">
                 <User className="w-5 h-5 text-blue-500" />
               </div>
               <div>
@@ -128,20 +132,20 @@ export function IncidentDetailsDialog({
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-green-500/10">
+              <div className="p-2 rounded-lg bg-primary/10">
                 <Calendar className="w-5 h-5 text-green-500" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">{t.incidents.fields.fechaCreacion}</p>
                 <p className="text-sm font-medium">
-                  {new Date(incident.fechaCreacion).toLocaleString(language)}
+                  {new Date(incident.fechaCreacion || incident.createdAt || Date.now()).toLocaleString(language)}
                 </p>
               </div>
             </div>
 
             {incident.asignadoANombre && (
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-orange-500/10">
+                <div className="p-2 rounded-lg bg-accent/10">
                   <User className="w-5 h-5 text-orange-500" />
                 </div>
                 <div>
@@ -153,7 +157,7 @@ export function IncidentDetailsDialog({
 
             {incident.fechaAsignacion && (
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-yellow-500/10">
+                <div className="p-2 rounded-lg bg-accent/10">
                   <Calendar className="w-5 h-5 text-yellow-500" />
                 </div>
                 <div>
@@ -167,7 +171,7 @@ export function IncidentDetailsDialog({
 
             {incident.fechaCierre && (
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-green-500/10">
+                <div className="p-2 rounded-lg bg-primary/10">
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                 </div>
                 <div>
