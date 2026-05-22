@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
     "axios": "^1.16.1",
+    "react-hook-form": "^7.76.0",
+    "zod": "^4.4.3",
     "zustand": "^5.0.13"
   }
 }
