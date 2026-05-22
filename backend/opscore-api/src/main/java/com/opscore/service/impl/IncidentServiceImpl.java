@@ -7,7 +7,6 @@ import com.opscore.entity.Area;
 import com.opscore.entity.Assignment;
 import com.opscore.entity.Incident;
 import com.opscore.entity.User;
-//import com.opscore.enums.Category;
 import com.opscore.enums.IncidentAction;
 import com.opscore.enums.IncidentStatus;
 import com.opscore.exception.BadRequestException;
@@ -231,7 +230,6 @@ public class IncidentServiceImpl implements IncidentService {
         incident.setResolvedBy(SecurityUtils.getCurrentUserEmail());
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
 
-        //incidentRepository.save(incident);
         Incident updatedIncident = incidentRepository.save(incident);
 
         //auditoria
@@ -260,7 +258,6 @@ public class IncidentServiceImpl implements IncidentService {
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
 
         Incident updatedIncident = incidentRepository.save(incident);
-        //incidentRepository.save(incident);
 
         //auditoria
         incidentLogService.logAction(
@@ -286,7 +283,6 @@ public class IncidentServiceImpl implements IncidentService {
         incident.setStatus(IncidentStatus.ON_HOLD);
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
 
-        //incidentRepository.save(incident);
         Incident updatedIncident = incidentRepository.save(incident);
 
         //auditoria
@@ -316,7 +312,7 @@ public class IncidentServiceImpl implements IncidentService {
         incident.setStatus(IncidentStatus.CANCELED);
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
 
-        //incidentRepository.save(incident);
+
         Incident updatedIncident = incidentRepository.save(incident);
 
         //auditoria
@@ -343,7 +339,6 @@ public class IncidentServiceImpl implements IncidentService {
         incident.setStatus(IncidentStatus.CLOSED);
         incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
 
-        //incidentRepository.save(incident);
         Incident updatedIncident = incidentRepository.save(incident);
 
         //auditoria

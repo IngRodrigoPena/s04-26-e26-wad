@@ -70,7 +70,6 @@ public class IncidentController {
     }
 
     //tecnico resuelve incidente
-    //@PreAuthorize("hasRole('TECHNICIAN')")
     @PreAuthorize("hasAnyRole('TECHNICIAN', 'ADMIN')")
     @PatchMapping("/{id}/resolve")
     public ResponseEntity<Void> resolveIncident(@PathVariable Long id) {
