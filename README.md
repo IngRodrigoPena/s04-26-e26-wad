@@ -18,6 +18,7 @@ Este proyecto es un sistema de gestión de incidentes para reportar, dar seguimi
 - Documentación de la API con **Swagger**
 - Despliegue del backend en **Render**
 - Almacenamiento de archivos en **Cloudinary**
+- Base de datos PostgreSQL para el backend
 - Frontend desarrollado en **Next.ts + React + Tailwind CSS**
 - Despliegue del frontend en **Vercel**
 - QA automatizado con **Playwright y Selenium**
@@ -27,7 +28,7 @@ Este proyecto es un sistema de gestión de incidentes para reportar, dar seguimi
 
 ### Backend
 
-[![Java](https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=java&logoColor=white)](https://www.java.com/) [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-boot) [![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/) [![Render](https://img.shields.io/badge/Render-0A191E?style=for-the-badge&logo=render&logoColor=white)](https://render.com) [![Cloudinary](https://img.shields.io/badge/Cloudinary-3438C5?style=for-the-badge&logo=cloudinary&logoColor=white)](https://cloudinary.com)
+[![Java](https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=java&logoColor=white)](https://www.java.com/) [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-boot) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/) [![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/) [![Render](https://img.shields.io/badge/Render-0A191E?style=for-the-badge&logo=render&logoColor=white)](https://render.com) [![Cloudinary](https://img.shields.io/badge/Cloudinary-3438C5?style=for-the-badge&logo=cloudinary&logoColor=white)](https://cloudinary.com)
 
 ### Frontend
 
