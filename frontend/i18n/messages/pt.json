@@ -1,0 +1,23 @@
+{
+  "nav": {
+    "home": "Início",
+    "about": "Sobre",
+    "contact": "Contato"
+  },
+  "hero": {
+    "title": "Bem-vindo ao nosso App",
+    "subtitle": "Construído com Next.js, Tailwind e shadcn/ui",
+    "cta": "Começar"
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Escuro",
+    "system": "Sistema"
+  },
+  "language": {
+    "select": "Selecionar idioma",
+    "es": "Espanhol",
+    "en": "Inglês",
+    "pt": "Português"
+  }
+}

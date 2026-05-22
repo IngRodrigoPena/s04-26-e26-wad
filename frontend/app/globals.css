@@ -1,6 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   --background: oklch(1 0 0);
@@ -117,60 +119,12 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
-
   body {
     @apply bg-background text-foreground;
   }
-}
-
-.bg-shapes {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.bg-shapes::before,
-.bg-shapes::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.4;
-}
-
-.bg-shapes::before {
-  width: 400px;
-  height: 400px;
-  background: hsl(var(--primary));
-  top: -100px;
-  right: -100px;
-  animation: float 20s ease-in-out infinite;
-}
-
-.bg-shapes::after {
-  width: 300px;
-  height: 300px;
-  background: hsl(var(--accent));
-  bottom: -50px;
-  left: -50px;
-  animation: float 15s ease-in-out infinite reverse;
-}
-
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-
-  33% {
-    transform: translate(30px, -30px);
-  }
-
-  66% {
-    transform: translate(-20px, 20px);
+  html {
+    @apply font-sans;
   }
 }
