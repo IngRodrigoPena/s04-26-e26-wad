@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -29,26 +30,31 @@ export function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon" className="relative h-9 w-9 rounded-full">
-          <div className="flex h-full w-full items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium">
+          <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-medium">
             {initials || <User className="h-4 w-4" />}
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{fullName}</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user?.email}
-            </p>
-            <p className="text-xs text-muted-foreground capitalize">
-              {user?.role?.toLowerCase()}
-            </p>
-          </div>
-        </DropdownMenuLabel>
+      <DropdownMenuContent className="w-64" align="end">
+          <DropdownMenuGroup>
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-base shrink-0">
+                  {initials || <User className="h-4 w-4" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{fullName}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                  {user?.role && (
+                    <p className="text-xs text-primary font-medium mt-0.5 capitalize">{user.role.toLowerCase()}</p>
+                  )}
+                </div>
+              </div>
+            </DropdownMenuLabel>
+          </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
-          <LogOut className="mr-2 h-4 w-4" />
+        <DropdownMenuItem variant="destructive" onClick={handleLogout}>
+          <LogOut className="h-4 w-4" />
           <span>Cerrar sesión</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

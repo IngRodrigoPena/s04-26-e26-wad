@@ -94,7 +94,7 @@ export function LoginForm() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-0 top-0 flex h-full items-center px-3 text-muted-foreground hover:text-foreground"
+              className="absolute right-0 top-0 flex h-full items-center px-3 text-muted-foreground hover:text-primary"
               tabIndex={-1}
             >
               {showPassword ? (
@@ -112,7 +112,7 @@ export function LoginForm() {
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" className="w-full transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:brightness-110" disabled={loading}>
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

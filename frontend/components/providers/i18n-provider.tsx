@@ -47,23 +47,19 @@ function getNestedValue(
   return typeof value === "string" ? value : path;
 }
 
-function getInitialLocale(): Locale {
-  if (typeof window !== "undefined") {
-    const stored = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("locale="))
-      ?.split("=")[1] as Locale | undefined;
-    if (stored && locales.includes(stored)) return stored;
-  }
-  return defaultLocale;
-}
-
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
+  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    const stored = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("locale="))
+      ?.split("=")[1] as Locale | undefined;
+    if (stored && locales.includes(stored)) {
+      setLocaleState(stored);
+    }
     setMounted(true);
   }, []);
 

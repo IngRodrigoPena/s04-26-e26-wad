@@ -10,12 +10,12 @@ import { useI18n, useTranslations, type Locale } from "@/components/providers/i1
 import { Button } from "@/components/ui/button";
 
 const TEST_USERS = [
-  { email: "admin@opscore.com", password: "abcd1234", role: "ADMIN", name: "Admin", color: "chart-1" },
-  { email: "manager@opscore.com", password: "abcd1234", role: "MANAGER", name: "Manager", color: "chart-2" },
-  { email: "supervisor@opscore.com", password: "abcd1234", role: "SUPERVISOR", name: "Supervisor", color: "chart-3" },
-  { email: "technician@opscore.com", password: "abcd1234", role: "TECHNICIAN", name: "Técnico", color: "chart-4" },
-  { email: "operator@opscore.com", password: "abcd1234", role: "OPERATOR", name: "Operador", color: "chart-5" },
-  { email: "user@opscore.com", password: "abcd1234", role: "USUARIO", name: "Usuario", color: "sidebar" },
+  { email: "admin@opscore.com", password: "abcd1234", role: "ADMIN", name: "Admin", color: "1" },
+  { email: "manager@opscore.com", password: "abcd1234", role: "MANAGER", name: "Manager", color: "2" },
+  { email: "supervisor@opscore.com", password: "abcd1234", role: "SUPERVISOR", name: "Supervisor", color: "3" },
+  { email: "technician@opscore.com", password: "abcd1234", role: "TECHNICIAN", name: "Técnico", color: "4" },
+  { email: "operator@opscore.com", password: "abcd1234", role: "OPERATOR", name: "Operador", color: "5" },
+  { email: "user@opscore.com", password: "abcd1234", role: "USUARIO", name: "Usuario", color: "6" },
 ];
 
 const LANGUAGES: { code: Locale; label: string }[] = [
@@ -49,7 +49,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 animate-fade-in-down">
           <div className="flex items-center gap-3">
             <span className="text-6xl">🐦‍🔥</span>
           </div>
@@ -62,7 +62,7 @@ export default function LoginPage() {
         </div>
 
         {/* Formulario */}
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm animate-fade-in-up delay-150">
           <div className="mb-6 text-center">
             <h2 className="text-lg font-semibold text-card-foreground">
               {t("loginTitle")}
@@ -88,8 +88,8 @@ export default function LoginPage() {
                   onClick={() => doLogin(u.email, u.password)}
                   className="flex flex-col items-center gap-1 rounded-lg border bg-card px-3 py-2 text-xs font-medium transition-colors hover:bg-accent disabled:opacity-50"
                   style={{
-                    borderColor: `var(--color-${u.color})`,
-                    color: `var(--color-${u.color})`,
+                    borderColor: `var(--chart-${u.color})`,
+                    color: `var(--chart-${u.color})`,
                   }}
                 >
                   <div className="flex items-center gap-1.5">
@@ -106,7 +106,7 @@ export default function LoginPage() {
         </div>
 
         {/* Controls: Theme + Language */}
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-4 animate-fade-in delay-300">
           <Button
             variant="outline"
             size="icon"
