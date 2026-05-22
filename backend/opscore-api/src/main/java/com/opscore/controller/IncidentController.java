@@ -3,13 +3,20 @@ package com.opscore.controller;
 import com.opscore.dto.assignment.AssignmentResponseDTO;
 import com.opscore.dto.incident.IncidentRequestDTO;
 import com.opscore.dto.incident.IncidentResponseDTO;
+import com.opscore.dto.incident.IncidentTimelineResponseDTO;
+import com.opscore.enums.IncidentStatus;
+import com.opscore.enums.Priority;
+import com.opscore.service.IncidentLogService;
 import com.opscore.service.IncidentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springdoc.core.annotations.ParameterObject;
 
 import java.util.List;
 
@@ -19,6 +26,7 @@ import java.util.List;
 public class IncidentController {
 
     private final IncidentService incidentService;
+    private final IncidentLogService incidentLogService;
 
     @PostMapping
     public ResponseEntity<IncidentResponseDTO> createIncident(
@@ -30,8 +38,22 @@ public class IncidentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<IncidentResponseDTO>> getAllIncidents() {
-        return ResponseEntity.ok(incidentService.getAllIncidents());
+    public ResponseEntity<List<IncidentResponseDTO>>
+    getIncidents(
+            @RequestParam(required = false)
+            IncidentStatus status,
+            @RequestParam(required = false)
+            Priority priority,
+            @RequestParam(required = false)
+            Long areaId
+    ) {
+        return ResponseEntity.ok(
+                incidentService.getFilteredIncidents(
+                        status,
+                        priority,
+                        areaId
+                )
+        );
     }
 
     @GetMapping("/{id}")
@@ -48,7 +70,6 @@ public class IncidentController {
     }
 
     //tecnico resuelve incidente
-    //@PreAuthorize("hasRole('TECHNICIAN')")
     @PreAuthorize("hasAnyRole('TECHNICIAN', 'ADMIN')")
     @PatchMapping("/{id}/resolve")
     public ResponseEntity<Void> resolveIncident(@PathVariable Long id) {
@@ -88,6 +109,22 @@ public class IncidentController {
     public ResponseEntity<Void> closeIncident(@PathVariable Long id) {
         incidentService.closeIncident(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/timeline")
+    public ResponseEntity<List<IncidentTimelineResponseDTO>>
+    getIncidentTimeline(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                incidentLogService.getIncidentTimeline(id)
+        );
+    }
+
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<IncidentResponseDTO>>
+           getIncidentsPaginated(@ParameterObject Pageable pageable) {
+            return ResponseEntity.ok(
+                   incidentService.getIncidentsPaginated(pageable)
+        );
     }
 
 }
