@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "My App",
-  description: "Built with Next.js, Tailwind and shadcn/ui",
+  title: "OpsCore",
+  description: "Sistema de Gestión de Incidentes.",
 };
 
 const themeScript = `

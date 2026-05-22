@@ -30,6 +30,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - ✅ Enhanced UserMenu dropdown (gradient avatar, role, destructive logout)
 - ✅ `--chart-6` added to globals.css for Usuario test user
 - ✅ i18n hydration fixed (no document.cookie in SSR useState)
+- ✅ SSR build fixes: `satisfies Partial<AuthState>` and AuthGuard hydration in useEffect
+- ✅ Commit & pushed to origin/main
 
 **Pending:**
 - Backend `.gitignore` stash
