@@ -23,6 +23,8 @@ Este proyecto es un sistema de gestión de incidentes para reportar, dar seguimi
 - Despliegue del frontend en **Vercel**
 - QA automatizado con **Playwright y Selenium**
 - Gestión de tareas del equipo con **Trello**
+ - QA automatizado con **Playwright y Selenium**, y gestión de casos con **TestRail**
+ - Gestión de tareas del equipo con **Trello**
 
 ## 🛠️ Tecnologías principales
 
@@ -37,12 +39,18 @@ Este proyecto es un sistema de gestión de incidentes para reportar, dar seguimi
 ### QA
 
 [![Playwright](https://img.shields.io/badge/Playwright-2B7489?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/) [![Selenium](https://img.shields.io/badge/Selenium-43B02A?style=for-the-badge&logo=selenium&logoColor=white)](https://www.selenium.dev/) [![Trello](https://img.shields.io/badge/Trello-0052CC?style=for-the-badge&logo=trello&logoColor=white)](https://trello.com/invite/b/6a03fbd9faabb3ec3dbd76d4/ATTIec43e55818a498d81561f0c6161eab1a85ABE816/opscore)
+[![TestRail](https://img.shields.io/badge/TestRail-FF6C37?style=for-the-badge&logo=testrail&logoColor=white)](https://opscore.testrail.io)
+
+
+> **Nota:** QA usa Trello para la gestión de tareas y **TestRail** para la elaboracion de casos de prueba.
 
 ## 📁 Estructura del repositorio
 
 - `/backend/opscore-api` — API REST construida con **Spring Boot**.
 - `/frontend` — Aplicación web frontend en **Next.js** con **Tailwind CSS**.
-- `/qa` — Pruebas automatizadas y configuración de QA con **Playwright**.
+- `/qa` — Pruebas automatizadas y configuración de QA con **Playwright y Selenium**.
+
+
 
 ## 👥 Equipo del proyecto
 
@@ -82,7 +90,6 @@ Somos un equipo de 4 colaboradores:
 |**Jesus Medina**|
 | [![Github Link](https://img.shields.io/badge/github-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white 'Github Link')](https://github.com/JesusMedina21) [![LinkedIn Link](https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin-white&logoColor=fff 'LinkedIn Link')](https://www.linkedin.com/in/jesusmedina-dev/ ) |
 
-> **Nota:** QA usa un tablero de Trello para la gestión y asignación de tareas del equipo.
 
 ## 🚀 Cómo ejecutar el proyecto localmente
 
@@ -110,7 +117,7 @@ Somos un equipo de 4 colaboradores:
 | Descripcion |  Deploy | link |
 |:-: |:-: | :-: |
 | Repositorio | [![Github Link](https://img.shields.io/badge/github-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white 'Github Link')](https://github.com/) | [Repositorio](https://github.com/No-Country-simulation/s04-26-e26-wad 'Repo App') |
-| Frontend | [![Vercel Link](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white 'Vercel Link')](https://vercel.com/) |[Sitio ](https://opscore.vercel.app) |
+| Frontend | [![Vercel Link](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white 'Vercel Link')](https://vercel.com/) |[Sitio ](https://opscore-app.vercel.app) |
 | Backend | [![Render](https://img.shields.io/badge/Render-0A191E?style=for-the-badge&logo=render&logoColor=white)](https://render.com) |[Documentacion](https://opscoreapi.onrender.com/swagger-ui/index.html#/) |
 | Data Base | [![Postgres Link](https://img.shields.io/badge/Postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)| [PostgreSQL](https://www.clever.cloud/) |
 
