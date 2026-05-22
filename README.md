@@ -1,0 +1,125 @@
+# 🚨 Sistema de Gestión de Incidentes
+
+## 📌 Descripción
+
+Este proyecto es un sistema de gestión de incidentes para reportar, dar seguimiento y analizar la resolución de fallas en equipos industriales, dispositivos, computadoras y cualquier tipo de activo crítico. Permite registrar daños, asignar técnicos, seguir el progreso de las reparaciones y analizar causas raíz para reducir la frecuencia de incidentes críticos.
+
+## 🎯 Funcionalidades clave
+
+- 📝 Registro de incidentes y reportes técnicos.
+- 👷‍♂️ Asignación de tareas de reparación a técnicos.
+- 📊 Seguimiento del estado y historial de incidentes.
+- 🔍 Análisis de causas raíz para prevenir nuevas fallas.
+- 📁 Almacenamiento de archivos e imágenes relacionadas.
+
+## 🧩 Alcance del proyecto
+
+- Backend / API REST en **Spring Boot (Java)**
+- Documentación de la API con **Swagger**
+- Despliegue del backend en **Render**
+- Almacenamiento de archivos en **Cloudinary**
+- Frontend desarrollado en **Next.ts + React + Tailwind CSS**
+- Despliegue del frontend en **Vercel**
+- QA automatizado con **Playwright y Selenium**
+- Gestión de tareas del equipo con **Trello**
+
+## 🛠️ Tecnologías principales
+
+### Backend
+
+[![Java](https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=java&logoColor=white)](https://www.java.com/) [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-boot) [![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/) [![Render](https://img.shields.io/badge/Render-0A191E?style=for-the-badge&logo=render&logoColor=white)](https://render.com) [![Cloudinary](https://img.shields.io/badge/Cloudinary-3438C5?style=for-the-badge&logo=cloudinary&logoColor=white)](https://cloudinary.com)
+
+### Frontend
+
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/) [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/) [![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+
+### QA
+
+[![Playwright](https://img.shields.io/badge/Playwright-2B7489?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/) [![Selenium](https://img.shields.io/badge/Selenium-43B02A?style=for-the-badge&logo=selenium&logoColor=white)](https://www.selenium.dev/) [![Trello](https://img.shields.io/badge/Trello-0052CC?style=for-the-badge&logo=trello&logoColor=white)](https://trello.com/invite/b/6a03fbd9faabb3ec3dbd76d4/ATTIec43e55818a498d81561f0c6161eab1a85ABE816/opscore)
+
+## 📁 Estructura del repositorio
+
+- `/backend/opscore-api` — API REST construida con **Spring Boot**.
+- `/frontend` — Aplicación web frontend en **Next.js** con **Tailwind CSS**.
+- `/qa` — Pruebas automatizadas y configuración de QA con **Playwright**.
+
+## 👥 Equipo del proyecto
+
+Somos un equipo de 4 colaboradores:
+- 2 desarrolladores backend
+- 1 desarrollador frontend
+- 1 QA
+
+
+## 🤵‍♂️Equipo [🔝](#readme-for--restify-app-)
+
+### Frontend 
+
+|![Avatar](https://avatars.githubusercontent.com/u/69812733?s=96&v=4) |
+|:-:|
+| **David H. Caycedo B.** |
+| [![Github Link](https://img.shields.io/badge/github-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white 'Github Link')](https://github.com/davidcoachdev) [![LinkedIn Link](https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin-white&logoColor=fff 'LinkedIn Link')](https://www.linkedin.com/in/davidcoachdev/)  |
+
+### Backends
+
+|<img src="https://media.licdn.com/dms/image/v2/D4E03AQG6Ec171YNU4A/profile-displayphoto-crop_800_800/B4EZs5pCDBIMAI-/0/1766198616537?e=1781136000&v=beta&t=dFy9qY_Jo0tMLMRsAAugqwyIIqYvFij1oDXi6-LtlLs" width="96" height="96" alt="Avatar" /> |
+|:-:|
+|**Rodrigo Peña**|
+| [![Github Link](https://img.shields.io/badge/github-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white 'Github Link')](https://github.com/IngRodrigoPena) [![LinkedIn Link](https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin-white&logoColor=fff 'LinkedIn Link')](https://www.linkedin.com/in/ing-rodrigo-pena-ramirez/) |
+
+
+|![Avatar](https://avatars.githubusercontent.com/u/66507975?s=96&v=4) |
+|:-:|
+|**Estanislao Hancco**|
+| [![Github Link](https://img.shields.io/badge/github-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white 'Github Link')](https://github.com/hanquito) [![LinkedIn Link](https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin-white&logoColor=fff 'LinkedIn Link')](https://www.linkedin.com/) |
+
+
+### QA
+
+| ![Avatar](https://avatars.githubusercontent.com/u/141883724?s=96&v=4) |
+|:-:|
+|**Jesus Medina**|
+| [![Github Link](https://img.shields.io/badge/github-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white 'Github Link')](https://github.com/JesusMedina21) [![LinkedIn Link](https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin-white&logoColor=fff 'LinkedIn Link')](https://www.linkedin.com/in/jesusmedina-dev/ ) |
+
+> **Nota:** QA usa un tablero de Trello para la gestión y asignación de tareas del equipo.
+
+## 🚀 Cómo ejecutar el proyecto localmente
+
+### Backend
+
+1. Ir a la carpeta `backend/opscore-api`
+2. Ejecutar el proyecto con Maven:
+   - `./mvnw spring-boot:run`
+3. Acceder a Swagger para documentarse y consumir la API.
+
+### Frontend
+
+1. Ir a la carpeta `frontend`
+2. Instalar dependencias y ejecutar la app con Next.js.
+
+### QA
+
+1. Ir a la carpeta `qa`
+2. Ejecutar las pruebas con Playwright.
+
+
+
+### 📚 Deploy [🔝](#readme-for--restify-app-)
+
+| Descripcion |  Deploy | link |
+|:-: |:-: | :-: |
+| Repositorio | [![Github Link](https://img.shields.io/badge/github-%23121011.svg?&style=for-the-badge&logo=github&logoColor=white 'Github Link')](https://github.com/) | [Repositorio](https://github.com/No-Country-simulation/s04-26-e26-wad 'Repo App') |
+| Frontend | [![Vercel Link](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white 'Vercel Link')](https://vercel.com/) |[Sitio ](https://opscore.vercel.app) |
+| Backend | [![Render](https://img.shields.io/badge/Render-0A191E?style=for-the-badge&logo=render&logoColor=white)](https://render.com) |[Documentacion](https://opscoreapi.onrender.com/swagger-ui/index.html#/) |
+| Data Base | [![Postgres Link](https://img.shields.io/badge/Postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)| [PostgreSQL](https://www.clever.cloud/) |
+
+
+## 🎯 Objetivo del sistema
+
+El sistema busca centralizar el flujo completo de gestión de incidentes:
+- reporte rápido de fallas,
+- asignación de técnicos,
+- seguimiento de la reparación,
+- análisis de causas raíz,
+- reducción de incidentes críticos.
+

@@ -1,4 +1,4 @@
-[20:41, 4/30/2026] +52 1 55 7205 5971: Este proyecto consiste en crear un sistema digital para reportar 
+Este proyecto consiste en crear un sistema digital para reportar 
 y gestionar problemas (incidentes) dentro de una fábrica.
 ______________
 🧠 ¿Cuál es el problema actual?
@@ -17,7 +17,7 @@ o	Abre un formulario desde su celular
 o	Describe qué pasó (tipo de problema, área, breve texto) 
 o	Lo envía 
 2.	📢 El superv…
-[20:42, 4/30/2026] +52 1 55 7205 5971: 🧭 Plan paso a paso
+🧭 Plan paso a paso
 1. 🧩 Entender y delimitar el alcance (Día 1–2)
 Antes de escribir código, definan:
 •	Tipos de incidentes (falla, accidente, calidad, etc.) 
