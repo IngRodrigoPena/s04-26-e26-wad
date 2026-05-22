@@ -19,5 +19,14 @@
     "es": "Español",
     "en": "Inglés",
     "pt": "Portugués"
+  },
+  "auth": {
+    "loginTitle": "Iniciar Sesión",
+    "loginDescription": "Ingresa tus credenciales para continuar",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "loginButton": "Ingresar",
+    "loggingIn": "Ingresando...",
+    "logout": "Cerrar sesión"
   }
 }
