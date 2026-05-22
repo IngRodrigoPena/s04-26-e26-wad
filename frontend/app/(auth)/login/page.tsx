@@ -1,5 +1,6 @@
 import { LoginForm } from "@/features/auth/components/login-form";
 
+// Server Component - no necesita "use client"
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
