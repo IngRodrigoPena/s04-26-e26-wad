@@ -29,6 +29,9 @@ node_modules
 # skill registry
 .atl/*
 
+# Git worktrees
+.worktrees/
+
 # Next.js
 .next/
 next-env.d.ts
