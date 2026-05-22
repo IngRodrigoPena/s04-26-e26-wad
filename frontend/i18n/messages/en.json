@@ -1,14 +1,4 @@
 {
-  "nav": {
-    "home": "Home",
-    "about": "About",
-    "contact": "Contact"
-  },
-  "hero": {
-    "title": "Welcome to our App",
-    "subtitle": "Built with Next.js, Tailwind and shadcn/ui",
-    "cta": "Get Started"
-  },
   "theme": {
     "light": "Light",
     "dark": "Dark",
