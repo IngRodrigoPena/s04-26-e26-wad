@@ -18,7 +18,7 @@ interface DropdownMenuTriggerProps extends MenuPrimitive.Trigger.Props {
   asChild?: boolean
 }
 
-function DropdownMenuTrigger({ asChild, children, ...props }: DropdownMenuTriggerProps) {
+function DropdownMenuTrigger({ children, ...props }: DropdownMenuTriggerProps) {
   return (
     <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props}>
       {children}

@@ -33,29 +33,37 @@ const messages: Record<Locale, typeof esMessages> = {
   pt: ptMessages,
 };
 
-function getNestedValue(obj: any, path: string): string {
+function getNestedValue(
+  obj: Record<string, unknown>,
+  path: string
+): string {
   const keys = path.split(".");
-  let value = obj;
+  let value: unknown = obj;
   for (const key of keys) {
-    value = value?.[key];
+    if (typeof value !== "object" || value === null) return path;
+    value = (value as Record<string, unknown>)[key];
     if (value === undefined) return path;
   }
-  return value || path;
+  return typeof value === "string" ? value : path;
 }
 
-export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
+function getInitialLocale(): Locale {
+  if (typeof window !== "undefined") {
     const stored = document.cookie
       .split("; ")
       .find((row) => row.startsWith("locale="))
       ?.split("=")[1] as Locale | undefined;
-    
-    if (stored && locales.includes(stored)) {
-      setLocaleState(stored);
-    }
+    if (stored && locales.includes(stored)) return stored;
+  }
+  return defaultLocale;
+}
+
+export function I18nProvider({ children }: { children: React.ReactNode }) {
+  const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

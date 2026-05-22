@@ -1,0 +1,52 @@
+"use client";
+
+import axios, {
+  type AxiosError,
+  type AxiosInstance,
+  type InternalAxiosRequestConfig,
+} from "axios";
+
+const apiClient: AxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Attach JWT token to every request when available
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error: AxiosError) => Promise.reject(error),
+);
+
+// Handle auth errors globally
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (error.response) {
+      const { status } = error.response;
+
+      if (status === 401 && typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        if (!window.location.pathname.includes("/login")) {
+          window.location.assign("/login");
+        }
+      }
+    } else if (error.request) {
+      console.error("No se pudo conectar con el servidor");
+    }
+
+    return Promise.reject(error);
+  },
+);
+
+export default apiClient;

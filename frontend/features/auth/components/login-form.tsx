@@ -4,9 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useAuthStore } from "@/features/auth/stores/auth-store";
+import { useTranslations } from "@/components/providers/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
 const loginSchema = z.object({
@@ -18,7 +19,9 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const { login, loading, error, clearError } = useAuthStore();
+  const t = useTranslations("auth");
   const [showError, setShowError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -33,9 +36,8 @@ export function LoginForm() {
     setShowError(false);
     try {
       await login(values);
-      // Redirigir al dashboard
-      window.location.href = "/dashboard";
-    } catch (error) {
+      window.location.assign("/dashboard");
+    } catch {
       setShowError(true);
     }
   };
@@ -56,7 +58,7 @@ export function LoginForm() {
             htmlFor="email"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Correo electrónico
+            {t("email")}
           </label>
           <Input
             id="email"
@@ -78,15 +80,30 @@ export function LoginForm() {
             htmlFor="password"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Contraseña
+            {t("password")}
           </label>
-          <Input
-            id="password"
-            placeholder="••••••••"
-            type="password"
-            disabled={loading}
-            {...form.register("password")}
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              placeholder="••••••••"
+              type={showPassword ? "text" : "password"}
+              disabled={loading}
+              className="pr-10"
+              {...form.register("password")}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-0 top-0 flex h-full items-center px-3 text-muted-foreground hover:text-foreground"
+              tabIndex={-1}
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
           {form.formState.errors.password && (
             <p className="text-sm text-red-500">
               {form.formState.errors.password.message}
@@ -99,10 +116,10 @@ export function LoginForm() {
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Ingresando...
+              {t("loggingIn")}
             </>
           ) : (
-            "Ingresar"
+            t("loginButton")
           )}
         </Button>
       </form>

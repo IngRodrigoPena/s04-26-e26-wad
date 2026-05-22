@@ -24,20 +24,31 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
+function getInitialTheme(
+  defaultTheme: Theme,
+  storageKey: string
+): Theme {
+  if (typeof window !== "undefined") {
+    const stored = localStorage.getItem(storageKey) as Theme | null;
+    return stored || defaultTheme;
+  }
+  return defaultTheme;
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = "dark",
   storageKey = "app-theme",
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(defaultTheme);
+  const [theme, setThemeState] = useState<Theme>(
+    () => getInitialTheme(defaultTheme, storageKey)
+  );
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(storageKey) as Theme | null;
-    const initialTheme = stored || defaultTheme;
-    setThemeState(initialTheme);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-  }, [defaultTheme, storageKey]);
+  }, []);
 
   useEffect(() => {
     if (!mounted) return;

@@ -1,9 +1,11 @@
+"use client";
+
+import { AuthGuard } from "@/features/auth/components/auth-guard";
 import { Header } from "@/components/header";
 
-// Server Component
 export default function DashboardPage() {
   return (
-    <>
+    <AuthGuard>
       <Header />
       <main className="flex-1 container py-12">
         <div className="max-w-4xl mx-auto">
@@ -15,6 +17,6 @@ export default function DashboardPage() {
           </p>
         </div>
       </main>
-    </>
+    </AuthGuard>
   );
 }

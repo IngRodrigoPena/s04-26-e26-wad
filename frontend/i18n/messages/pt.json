@@ -12,6 +12,7 @@
   },
   "auth": {
     "loginTitle": "Entrar",
+    "loginSubtitle": "Sistema de Gerenciamento de Incidentes",
     "loginDescription": "Digite suas credenciais para continuar",
     "email": "E-mail",
     "password": "Senha",

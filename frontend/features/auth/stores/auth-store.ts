@@ -2,8 +2,9 @@
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { authApi, usersApi } from "@/features/auth/api";
-import type { LoginRequestDTO, UserResponseDTO } from "@/features/auth/api";
+import { authApi } from "@/api/auth";
+import { usersApi } from "@/api/user";
+import type { LoginRequestDTO, UserResponseDTO } from "@/api/types";
 
 // Versión del store - incrementar cuando cambie la estructura
 const STORE_VERSION = 1;
@@ -58,10 +59,15 @@ export const useAuthStore = create<AuthState>()(
             loading: false,
             error: null,
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const message =
+            error instanceof Object &&
+            error !== null &&
+            "response" in error &&
+            (error as { response: { data: { message?: string } } }).response
+              ?.data?.message;
           set({
-            error:
-              error.response?.data?.message || "Error al iniciar sesión",
+            error: message || "Error al iniciar sesión",
             loading: false,
             isAuthenticated: false,
           });
@@ -111,7 +117,10 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
       }),
       // Migrate old stores without version
-      migrate: (persistedState: any, version: number) => {
+      migrate: (
+        persistedState: unknown,
+        version: number
+      ) => {
         if (version !== STORE_VERSION) {
           console.log(
             "[AuthStore] Migrating from version",
@@ -127,9 +136,9 @@ export const useAuthStore = create<AuthState>()(
             token: null,
             loading: false,
             error: null,
-          } as any;
+          } satisfies AuthState;
         }
-        return persistedState;
+        return persistedState as AuthState;
       },
     }
   )
