@@ -136,7 +136,7 @@ export const useAuthStore = create<AuthState>()(
             token: null,
             loading: false,
             error: null,
-          } satisfies AuthState;
+          } satisfies Partial<AuthState>;
         }
         return persistedState as AuthState;
       },

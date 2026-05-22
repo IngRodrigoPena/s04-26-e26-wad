@@ -18,18 +18,20 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
 
   // Zustand persist hydration is async — wait before making auth decisions.
-  // Lazy-initialize from hasHydrated() to avoid setState in the effect body.
-  const [hydrated, setHydrated] = useState(() =>
-    useAuthStore.persist.hasHydrated(),
-  );
+  // Start unhydrated (SSR-safe), then subscribe to hydration on mount.
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (hydrated) return;
+    // Check immediately in case persist already hydrated before mount
+    if (useAuthStore.persist.hasHydrated()) {
+      setHydrated(true);
+      return;
+    }
     const unsub = useAuthStore.persist.onFinishHydration(() => {
       setHydrated(true);
     });
     return () => unsub();
-  }, [hydrated]);
+  }, []);
 
   useEffect(() => {
     if (hydrated && !token) {
