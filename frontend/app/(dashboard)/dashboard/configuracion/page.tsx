@@ -267,7 +267,7 @@ export default function ConfiguracionPage() {
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col gap-2 sm:max-w-[320px]">
-                    <Select value={apiBaseUrl} onValueChange={setApiBaseUrl}>
+                    <Select value={apiBaseUrl} onValueChange={(value) => value && setApiBaseUrl(value)}>
                       <SelectTrigger>{apiBaseUrl}</SelectTrigger>
                       <SelectPopup>
                         <SelectList>

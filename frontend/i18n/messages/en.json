@@ -165,7 +165,14 @@
     "comingSoon": "Chart coming soon",
     "distribution": "Incident Distribution",
     "dataComingSoon": "Data visualization coming soon",
-    "phase2": "Analytics charts will be available in the next phase"
+    "phase2": "Analytics charts will be available in next phase",
+    "refresh": "Refresh",
+    "statusDistribution": "Status Distribution",
+    "statusDesc": "Incidents grouped by current status",
+    "priorityDistribution": "Priority Distribution",
+    "priorityDesc": "Incidents by priority level",
+    "areaBreakdown": "Incidents by Area",
+    "areaDesc": "Incident distribution by operational area"
   },
   "incidents": {
     "tabs": {

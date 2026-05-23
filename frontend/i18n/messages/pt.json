@@ -165,7 +165,14 @@
     "comingSoon": "Gráfico em breve",
     "distribution": "Distribuição de Incidentes",
     "dataComingSoon": "Visualização de dados em breve",
-    "phase2": "Os gráficos de analytics estarão disponíveis na próxima fase"
+    "phase2": "Os gráficos de análise estarão disponíveis na próxima fase",
+    "refresh": "Atualizar",
+    "statusDistribution": "Distribuição por Estado",
+    "statusDesc": "Incidentes agrupados por estado atual",
+    "priorityDistribution": "Distribuição por Prioridade",
+    "priorityDesc": "Incidentes por nível de prioridade",
+    "areaBreakdown": "Incidentes por Área",
+    "areaDesc": "Distribuição de incidentes por área operacional"
   },
   "incidents": {
     "tabs": {
