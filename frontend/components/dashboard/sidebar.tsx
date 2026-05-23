@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { X, LayoutDashboard, AlertTriangle, BarChart3, Users, UserCheck, UserCircle, Shield, ListChecks, Settings } from "lucide-react";
+import { X, LayoutDashboard, AlertTriangle, BarChart3, Users, UserCheck, UserCircle, Shield, ListChecks, Settings, Building2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { NavItem, MenuSection } from "@/lib/rbac";
 
@@ -17,6 +17,7 @@ const iconMap: Record<string, LucideIcon> = {
   Shield,
   ListChecks,
   Settings,
+  Building2,
 };
 
 interface SidebarProps {

@@ -30,6 +30,7 @@ public interface IncidentRepository extends JpaRepository<Incident, Long> {
     List<Incident> findByStatus(IncidentStatus status);
     List<Incident> findByPriority(Priority priority);
     List<Incident> findByAreaId(Long areaId);
+    long countByAreaId(Long areaId);
     List<Incident> findByStatusAndPriority(IncidentStatus status,Priority priority);
 }
 

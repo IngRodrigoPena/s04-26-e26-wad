@@ -40,6 +40,7 @@
     "configuracionSection": "Configuración",
     "usuarios": "Usuarios",
     "roles": "Roles",
+    "areas": "Áreas",
     "estados": "Estados",
     "configuracion": "Configuración",
     "logout": "Cerrar sesión",
@@ -53,6 +54,7 @@
     "incidentsInProgress": "En Progreso",
     "incidentsResolved": "Resueltos",
     "incidentsTotal": "Total",
+    "resolutionRate": "Tasa de Resolución",
     "quickActions": "Acciones Rápidas",
     "createIncident": "Crear Incidente",
     "viewIncidents": "Ver Incidentes",
@@ -109,6 +111,14 @@
     "noUsers": "No hay usuarios registrados",
     "active": "Activo",
     "inactive": "Inactivo"
+  },
+  "areasPage": {
+    "title": "Áreas Operativas",
+    "subtitle": "Áreas operativas registradas en el sistema",
+    "noAreas": "No hay áreas registradas",
+    "noDescription": "Sin descripción",
+    "oneIncident": "1 incidente",
+    "nIncidents": "{count} incidentes"
   },
   "rolesPage": {
     "title": "Roles del Sistema",

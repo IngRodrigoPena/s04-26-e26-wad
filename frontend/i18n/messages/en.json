@@ -40,6 +40,7 @@
     "configuracionSection": "Settings",
     "usuarios": "Users",
     "roles": "Roles",
+    "areas": "Areas",
     "estados": "Status",
     "configuracion": "Settings",
     "logout": "Logout",
@@ -53,6 +54,7 @@
     "incidentsInProgress": "In Progress",
     "incidentsResolved": "Resolved",
     "incidentsTotal": "Total",
+    "resolutionRate": "Resolution Rate",
     "quickActions": "Quick Actions",
     "createIncident": "Create Incident",
     "viewIncidents": "View Incidents",
@@ -123,6 +125,14 @@
     "permUsers": "User Management",
     "permRoles": "Role Management",
     "permSettings": "System Settings"
+  },
+  "areasPage": {
+    "title": "Operational Areas",
+    "subtitle": "Operational areas registered in the system",
+    "noAreas": "No areas registered",
+    "noDescription": "No description",
+    "oneIncident": "1 incident",
+    "nIncidents": "{count} incidents"
   },
   "estadosPage": {
     "title": "Incident Status",

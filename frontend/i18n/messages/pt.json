@@ -40,6 +40,7 @@
     "configuracionSection": "Configuração",
     "usuarios": "Usuários",
     "roles": "Funções",
+    "areas": "Áreas",
     "estados": "Status",
     "configuracion": "Configuração",
     "logout": "Sair",
@@ -53,6 +54,7 @@
     "incidentsInProgress": "Em Progresso",
     "incidentsResolved": "Resolvidos",
     "incidentsTotal": "Total",
+    "resolutionRate": "Taxa de Resolução",
     "quickActions": "Ações Rápidas",
     "createIncident": "Criar Incidente",
     "viewIncidents": "Ver Incidentes",
@@ -123,6 +125,14 @@
     "permUsers": "Gestão de Usuários",
     "permRoles": "Gestão de Funções",
     "permSettings": "Configuração do Sistema"
+  },
+  "areasPage": {
+    "title": "Áreas Operacionais",
+    "subtitle": "Áreas operacionais registradas no sistema",
+    "noAreas": "Nenhuma área registrada",
+    "noDescription": "Sem descrição",
+    "oneIncident": "1 incidente",
+    "nIncidents": "{count} incidentes"
   },
   "estadosPage": {
     "title": "Status de Incidentes",

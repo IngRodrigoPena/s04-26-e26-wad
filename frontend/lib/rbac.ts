@@ -23,7 +23,7 @@ export interface MenuSection {
 export const MENU_SECTIONS: MenuSection[] = [
   { key: "sistema-gestion", label: "nav.sistemaGestion", items: ["dashboard", "incidentes", "reportes", "asignaciones"] },
   { key: "personal", label: "nav.personal", items: ["perfil"] },
-  { key: "configuracion", label: "nav.configuracionSection", items: ["usuarios", "roles", "estados", "configuracion"] },
+  { key: "configuracion", label: "nav.configuracionSection", items: ["usuarios", "roles", "areas", "estados", "configuracion"] },
 ];
 
 const navItems: NavItem[] = [
@@ -75,6 +75,13 @@ const navItems: NavItem[] = [
     key: "roles",
     label: "nav.roles",
     roles: [Role.ADMIN],
+  },
+  {
+    href: "/dashboard/areas",
+    icon: "Building2",
+    key: "areas",
+    label: "nav.areas",
+    roles: [Role.ADMIN, Role.MANAGER],
   },
   {
     href: "/dashboard/estados",
