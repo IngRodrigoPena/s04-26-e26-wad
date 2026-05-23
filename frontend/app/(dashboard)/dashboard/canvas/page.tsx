@@ -1,13 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useMemo } from "react";
 import { useI18n } from "@/components/providers/i18n-provider";
-import { dashboardApi } from "@/api/dashboard";
-import type {
-  IncidentStatusMetrics,
-  IncidentPriorityMetrics,
-  AreaMetrics,
-} from "@/api/dashboard";
+import { useAuthStore } from "@/features/auth/stores/auth-store";
+import { useIncidentsStore } from "@/features/incidents/stores/incidents-store";
 import {
   BarChart,
   Bar,
@@ -129,57 +125,59 @@ function CustomDot({ cx, cy, fill }: { cx?: number; cy?: number; fill?: string }
 
 export default function CanvasPage() {
   const { t, mounted } = useI18n();
-
-  const [statusMetrics, setStatusMetrics] = useState<IncidentStatusMetrics | null>(null);
-  const [priorityMetrics, setPriorityMetrics] = useState<IncidentPriorityMetrics | null>(null);
-  const [areaMetrics, setAreaMetrics] = useState<AreaMetrics[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await dashboardApi.getAll();
-      setStatusMetrics(data.status);
-      setPriorityMetrics(data.priority);
-      setAreaMetrics(data.areas);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar métricas");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { user } = useAuthStore();
+  const { incidents, loading, fetchIncidents } = useIncidentsStore();
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchIncidents();
+  }, [fetchIncidents]);
 
-  if (!mounted) return null;
+  // Role-based filter (same as incidents page + resumen)
+  const visibleIncidents = useMemo(() => {
+    const isSupervisor = user?.role === "SUPERVISOR";
+    const isTechnician = user?.role === "TECHNICIAN";
+    const isOperator = user?.role === "OPERATOR";
+    if (isSupervisor) return incidents.filter((i) => i.areaName === user?.area);
+    if (isTechnician) return incidents.filter((i) => i.assignedToId === user?.id);
+    if (isOperator) return incidents.filter((i) => i.reportedById === user?.id);
+    return incidents;
+  }, [incidents, user]);
 
-  // ── Compute derived stats ──
+  // ── Compute derived stats from filtered incidents ──
 
-  const totalIncidents = statusMetrics?.total ?? 0;
-  const openCount = statusMetrics?.open ?? 0;
-  const resolvedCount = (statusMetrics?.resolved ?? 0) + (statusMetrics?.closed ?? 0);
-  const inProgressCount = statusMetrics?.inProgress ?? 0;
+  const totalIncidents = visibleIncidents.length;
+  const openCount = visibleIncidents.filter((i) => i.status === "OPEN" || i.status === "ASSIGNED").length;
+  const inProgressCount = visibleIncidents.filter((i) => i.status === "IN_PROGRESS" || i.status === "ON_HOLD").length;
+  const resolvedCount = visibleIncidents.filter((i) => i.status === "RESOLVED" || i.status === "CLOSED" || i.status === "CANCELED").length;
   const resolutionRate = totalIncidents > 0 ? ((resolvedCount / totalIncidents) * 100).toFixed(1) : "0.0";
+
+  // ── Compute status counts per key ──
+  const statusCounts: Record<string, number> = {};
+  for (const i of visibleIncidents) {
+    const key = i.status.toLowerCase();
+    statusCounts[key] = (statusCounts[key] || 0) + 1;
+  }
+
+  // ── Compute priority counts per key ──
+  const priorityCounts: Record<string, number> = {};
+  for (const i of visibleIncidents) {
+    const key = i.priority.toLowerCase();
+    priorityCounts[key] = (priorityCounts[key] || 0) + 1;
+  }
 
   // ── Prepare chart data ──
 
-  const statusChartData = statusMetrics
-    ? Object.entries(statusMetrics)
-        .filter(([key]) => key !== "total")
-        .map(([key, value]) => ({
-          name: formatStatusLabel(key),
-          key,
-          value,
-          fill: STATUS_COLORS[key] || CHART_PALETTE[0],
-        }))
+  const statusChartData = visibleIncidents.length > 0
+    ? Object.entries(statusCounts).map(([key, value]) => ({
+        name: formatStatusLabel(key),
+        key,
+        value,
+        fill: STATUS_COLORS[key] || CHART_PALETTE[0],
+      }))
     : [];
 
-  const priorityChartData = priorityMetrics
-    ? Object.entries(priorityMetrics).map(([key, value]) => ({
+  const priorityChartData = visibleIncidents.length > 0
+    ? Object.entries(priorityCounts).map(([key, value]) => ({
         name: formatStatusLabel(key),
         key,
         value,
@@ -187,12 +185,16 @@ export default function CanvasPage() {
       }))
     : [];
 
-  const areaChartData = areaMetrics
-    .sort((a, b) => b.count - a.count)
-    .map((area) => ({
-      name: area.area,
-      value: area.count,
-    }));
+  // ── Area counts from filtered incidents ──
+  const areaCounts: Record<string, number> = {};
+  for (const i of visibleIncidents) {
+    const area = i.areaName || "Sin área";
+    areaCounts[area] = (areaCounts[area] || 0) + 1;
+  }
+
+  const areaChartData = Object.entries(areaCounts)
+    .sort(([, a], [, b]) => b - a)
+    .map(([name, value]) => ({ name, value }));
 
   const isAreaEmpty = areaChartData.length === 0;
 
@@ -210,24 +212,11 @@ export default function CanvasPage() {
             {t("dashboard.description")}
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchData} disabled={loading}>
+        <Button variant="outline" size="sm" onClick={() => fetchIncidents()} disabled={loading}>
           <RefreshCw className={cn("mr-1.5 h-4 w-4", loading && "animate-spin")} />
           {t("reports.refresh") || "Actualizar"}
         </Button>
       </div>
-
-      {/* Error banner */}
-      {error && (
-        <Card className="border-destructive/50 bg-destructive/5">
-          <CardContent className="flex items-center gap-3 py-4">
-            <AlertTriangle className="h-5 w-5 shrink-0 text-destructive" />
-            <p className="flex-1 text-sm text-destructive">{error}</p>
-            <Button variant="outline" size="sm" onClick={fetchData}>
-              {t("reports.refresh") || "Reintentar"}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
 
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

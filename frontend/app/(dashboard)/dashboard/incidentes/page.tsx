@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/components/providers/i18n-provider";
 import { useAuthStore } from "@/features/auth/stores/auth-store";
 import { useIncidentsStore } from "@/features/incidents/stores/incidents-store";
-import { Priority, IncidentType, priorityConfig } from "@/api/incidents/types";
+import { CreateIncidentSheet } from "@/features/incidents/components/create-incident-sheet";
+import type { IncidentResponseDTO } from "@/api/incidents/types";
+import { Priority, IncidentType } from "@/api/incidents/types";
+import type { UserResponseDTO } from "@/api/types";
+import { usersApi } from "@/api/user";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -12,37 +17,13 @@ import {
   Plus,
   BarChart3,
   AlertCircle,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { extractApiError } from "@/lib/api-errors";
-import {
-  Select,
-  SelectTrigger,
-  SelectPopup,
-  SelectList,
-  SelectItem,
-  SelectItemText,
-  SelectItemIndicator,
-} from "@/components/ui/select";
-import {
-  Sheet,
-  SheetHeader,
-  SheetTitle,
-  SheetContent,
-  SheetFooter,
-  SheetClose,
-} from "@/components/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const TYPE_OPTIONS = Object.values(IncidentType);
-const PRIORITY_OPTIONS = Object.values(Priority);
 
 const AREA_OPTIONS = [
   { id: 1, name: "PRODUCTION" },
@@ -52,101 +33,160 @@ const AREA_OPTIONS = [
   { id: 5, name: "LOGISTICS" },
 ];
 
-interface FormState {
-  title: string;
-  description: string;
-  type: IncidentType;
-  priority: Priority;
-  areaId: number | null;
-}
-
-const initialForm: FormState = {
-  title: "",
-  description: "",
-  type: IncidentType.OTHER,
-  priority: Priority.MEDIUM,
-  areaId: null,
+const priorityConfig: Record<string, { color: string; badge: string }> = {
+  LOW: { color: "bg-blue-50 dark:bg-blue-950", badge: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" },
+  MEDIUM: { color: "bg-yellow-50 dark:bg-yellow-950", badge: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" },
+  HIGH: { color: "bg-orange-50 dark:bg-orange-950", badge: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200" },
+  CRITICAL: { color: "bg-red-50 dark:bg-red-950", badge: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" },
 };
 
 export default function IncidentsPage() {
   const { t, mounted } = useI18n();
   const { user } = useAuthStore();
+  const router = useRouter();
   const {
     incidents,
     loading,
     fetchIncidents,
     createIncident,
   } = useIncidentsStore();
-  const [activeTab, setActiveTab] = useState("todos");
+  const [allUsers, setAllUsers] = useState<UserResponseDTO[]>([]);
+  const [seeding, setSeeding] = useState(false);
+  const [seedDone, setSeedDone] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [form, setForm] = useState<FormState>(initialForm);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
+  // Fetch users for supervisor + seed lookup
   useEffect(() => {
     fetchIncidents();
+    usersApi.getAll().then(setAllUsers).catch(() => {});
   }, []);
 
-  const stats = incidents.reduce(
+  // Filter by role: supervisors only see their area incidents
+  const isSupervisor = user?.role === "SUPERVISOR";
+  const isTechnician = user?.role === "TECHNICIAN";
+  const isOperator = user?.role === "OPERATOR";
+  const visibleIncidents = isSupervisor
+    ? incidents.filter((i) => i.areaName === user?.area)
+    : isTechnician
+      ? incidents.filter((i) => i.assignedToId === user?.id)
+      : isOperator
+        ? incidents.filter((i) => i.reportedById === user?.id)
+        : incidents;
+
+  const stats = visibleIncidents.reduce(
     (acc, inc) => {
       acc.total++;
-      if (inc.status === "OPEN") acc.open++;
+      if (inc.status === "OPEN" || inc.status === "ASSIGNED") acc.open++;
       if (inc.status === "IN_PROGRESS") acc.inProgress++;
-      if (inc.status === "RESOLVED" || inc.status === "CLOSED") acc.closed++;
+      if (inc.status === "ON_HOLD") acc.onHold++;
+      if (inc.status === "RESOLVED") acc.resolved++;
+      if (inc.status === "CLOSED" || inc.status === "CANCELED") acc.closed++;
       return acc;
     },
-    { total: 0, open: 0, inProgress: 0, closed: 0 },
+    { total: 0, open: 0, inProgress: 0, onHold: 0, resolved: 0, closed: 0 },
   );
 
-  const getFilteredIncidents = () => {
-    switch (activeTab) {
-      case "abiertos":
-        return incidents.filter((i) => i.status === "OPEN");
-      case "en_proceso":
-        return incidents.filter((i) => i.status === "IN_PROGRESS");
-      case "cerrados":
-        return incidents.filter(
-          (i) => i.status === "RESOLVED" || i.status === "CLOSED",
-        );
-      case "mis_incidentes":
-        return incidents.filter(
-          (i) =>
-            i.reportedById === user?.id || i.assignedToId === user?.id,
-        );
-      default:
-        return incidents;
-    }
+  // ── Seed test data ──────────────────────────
+
+  const roleIdMap: Record<string, number> = {
+    ADMIN: 1,
+    MANAGER: 2,
+    SUPERVISOR: 3,
+    TECHNICIAN: 4,
+    OPERATOR: 5,
+    USER: 6,
   };
 
-  const filtered = getFilteredIncidents();
+  const SEED_USERS = [
+    { firstName: "Laura", lastName: "Pérez", email: "laura@opscore.com", role: "SUPERVISOR", area: "PRODUCTION" },
+    { firstName: "Carlos", lastName: "Gómez", email: "carlos@opscore.com", role: "SUPERVISOR", area: "CONTABILITY" },
+    { firstName: "María", lastName: "López", email: "maria@opscore.com", role: "SUPERVISOR", area: "RRHH" },
+    { firstName: "Pedro", lastName: "Ramírez", email: "pedro@opscore.com", role: "SUPERVISOR", area: "IT" },
+    { firstName: "Ana", lastName: "Martínez", email: "ana@opscore.com", role: "SUPERVISOR", area: "LOGISTICS" },
+    { firstName: "Diego", lastName: "Fernández", email: "diego@opscore.com", role: "TECHNICIAN", area: "PRODUCTION" },
+    { firstName: "Sofía", lastName: "Torres", email: "sofia@opscore.com", role: "TECHNICIAN", area: "CONTABILITY" },
+    { firstName: "Luis", lastName: "Herrera", email: "luis@opscore.com", role: "TECHNICIAN", area: "IT" },
+    { firstName: "Valentina", lastName: "Díaz", email: "valentina@opscore.com", role: "OPERATOR", area: "PRODUCTION" },
+    { firstName: "Jorge", lastName: "Castro", email: "jorge@opscore.com", role: "OPERATOR", area: "RRHH" },
+    { firstName: "Camila", lastName: "Rojas", email: "camila@opscore.com", role: "OPERATOR", area: "LOGISTICS" },
+    { firstName: "Andrés", lastName: "Morales", email: "andres@opscore.com", role: "OPERATOR", area: "CONTABILITY" },
+    { firstName: "Florencia", lastName: "Acosta", email: "florencia@opscore.com", role: "TECHNICIAN", area: "LOGISTICS" },
+  ];
+
+  const handleSeedData = async () => {
+    setSeeding(true);
+    try {
+      // Create users
+      for (const u of SEED_USERS) {
+        try {
+          await usersApi.create({
+            firstName: u.firstName,
+            lastName: u.lastName,
+            email: u.email,
+            password: "abcd1234",
+            roleId: roleIdMap[u.role] || 5,
+            areaId: AREA_OPTIONS.find((a) => a.name === u.area)?.id || null,
+          });
+        } catch {
+          // User already exists — skip
+        }
+      }
+
+      // Re-fetch users
+      const updatedUsers = await usersApi.getAll();
+      setAllUsers(updatedUsers);
+
+      // Create test incidents
+      const TITLES = [
+        "Falla en línea de producción N°3",
+        "Error en facturación del cliente XYZ",
+        "Problema con nómina de empleados",
+        "Caída del servidor principal",
+        "Incidente de seguridad en acceso",
+        "Desperfecto en maquinaria de empaque",
+        "Discrepancia en inventario de materiales",
+        "Fuga en sistema de refrigeración",
+        "Error en reporte financiero mensual",
+        "Problema de conectividad en oficina",
+        "Falla en equipo de laboratorio",
+        "Error en etiquetado de lote",
+      ];
+
+      for (let i = 0; i < TITLES.length; i++) {
+        const area = AREA_OPTIONS[i % AREA_OPTIONS.length];
+        const areaUsers = updatedUsers.filter((u) => u.area === area.name);
+        const supervisor = areaUsers.find((u) => u.role === "SUPERVISOR");
+        const technician = areaUsers.find((u) => u.role === "TECHNICIAN");
+        const operator = areaUsers.find((u) => u.role === "OPERATOR");
+
+        try {
+          await createIncident({
+            title: TITLES[i],
+            description: `Incidente de prueba: ${TITLES[i]}`,
+            type: IncidentType.OTHER,
+            priority: ([Priority.LOW, Priority.MEDIUM, Priority.HIGH, Priority.CRITICAL] as const)[i % 4],
+            areaId: area.id,
+            reportedById: operator?.id || user?.id,
+            assignedToId: technician?.id || undefined,
+            supervisorId: supervisor?.id || undefined,
+            isFalseAlarm: false,
+          });
+        } catch {
+          // Skip if fails
+        }
+      }
+
+      await fetchIncidents();
+      setSeedDone(true);
+    } catch (err) {
+      console.error("Seed error:", err);
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   const handleOpenSheet = () => {
-    setForm(initialForm);
-    setError(null);
     setSheetOpen(true);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSubmitting(true);
-
-    try {
-      await createIncident({
-        title: form.title.trim(),
-        description: form.description.trim(),
-        type: form.type,
-        priority: form.priority,
-        areaId: form.areaId || undefined,
-        isFalseAlarm: false,
-        reportedById: user?.id,
-      });
-      setSheetOpen(false);
-    } catch (err: unknown) {
-      setError(extractApiError(err, "Error al crear incidente"));
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   if (!mounted) return null;
@@ -163,10 +203,22 @@ export default function IncidentsPage() {
             {t("dashboard.incidentsTotal")}: {stats.total}
           </p>
         </div>
-        <Button onClick={handleOpenSheet}>
-          <Plus className="mr-1.5 h-4 w-4" />
-          {t("dashboard.createIncident")}
-        </Button>
+        <div className="flex gap-2">
+          {user?.role === "ADMIN" && !seedDone && (
+            <Button variant="outline" size="sm" onClick={handleSeedData} disabled={seeding}>
+              {seeding ? (
+                <div className="mr-1.5 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : (
+                <Plus className="mr-1.5 h-4 w-4" />
+              )}
+              {seeding ? "Creando datos..." : "Seed test data"}
+            </Button>
+          )}
+          <Button onClick={handleOpenSheet}>
+            <Plus className="mr-1.5 h-4 w-4" />
+            {t("dashboard.createIncident")}
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -230,293 +282,161 @@ export default function IncidentsPage() {
         })}
       </div>
 
-      {/* Tabs + List */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as string)}>
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="todos">{t("incidents.tabs.all")}</TabsTrigger>
-          <TabsTrigger value="abiertos">
-            {t("incidents.tabs.open")}
-            {stats.open > 0 && (
-              <Badge variant="destructive" className="ml-1.5">
-                {stats.open}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="en_proceso">
-            {t("incidents.tabs.inProgress")}
-            {stats.inProgress > 0 && (
-              <Badge variant="secondary" className="ml-1.5">
-                {stats.inProgress}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="cerrados">{t("incidents.tabs.closed")}</TabsTrigger>
-          <TabsTrigger value="mis_incidentes">{t("incidents.tabs.myIncidents")}</TabsTrigger>
-        </TabsList>
-
-        {(["todos", "abiertos", "en_proceso", "cerrados", "mis_incidentes"] as const).map((tab) => (
-          <TabsContent key={tab} value={tab}>
-            {loading ? (
-              <div className="space-y-3">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <Skeleton key={i} className="h-20 w-full rounded-xl" />
-                ))}
-              </div>
-            ) : filtered.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center py-12 text-muted-foreground">
-                  <AlertCircle className="mb-3 h-10 w-10 opacity-40" />
-                  <p className="text-sm">{t("dashboard.noIncidents")}</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2">
-                {filtered.map((incident) => {
-                  const StatusIcon = getStatusIcon(incident.status);
-                  const statusStyle = getStatusStyle(incident.status);
-                  return (
-                    <Card key={incident.id} className="transition-colors hover:border-primary/50">
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className={cn("rounded-lg p-2", statusStyle.bg)}>
-                            <StatusIcon
-                              className={cn("h-4 w-4", statusStyle.text)}
-                            />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-medium text-card-foreground">
-                              {incident.title}
-                            </p>
-                            <p className="mt-0.5 text-xs text-muted-foreground">
-                              {incident.areaName || getTypeShort(t, incident.type)}
-                            </p>
-                            <div className="mt-2 flex items-center gap-2">
-                              <Badge
-                                variant="outline"
-                                className="text-[10px] font-medium"
-                              >
-                                {incident.priority}
-                              </Badge>
-                              <span className="text-[10px] text-muted-foreground">
-                                {new Date(incident.createdAt).toLocaleDateString()}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
-          </TabsContent>
-        ))}
-      </Tabs>
-
-      {/* ─── Sheet: Create Incident ─── */}
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetHeader>
-          <SheetTitle>{t("incidents.form.sheetTitle")}</SheetTitle>
-          <SheetClose />
-        </SheetHeader>
-
-        <form onSubmit={handleSubmit} className="flex flex-1 flex-col">
-          <SheetContent>
-            {error && (
-              <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-                {error}
-              </div>
-            )}
-
-            <div className="space-y-5">
-              {/* Title */}
-              <div className="space-y-2">
-                <Label htmlFor="incident-title">{t("incidents.form.title")}</Label>
-                <Input
-                  id="incident-title"
-                  value={form.title}
-                  onChange={(e) =>
-                    setForm({ ...form, title: e.target.value })
-                  }
-                  required
-                  minLength={5}
-                  maxLength={100}
-                  placeholder={t("incidents.form.titlePlaceholder")}
-                />
-              </div>
-
-              {/* Description */}
-              <div className="space-y-2">
-                <Label htmlFor="incident-desc">{t("incidents.form.description")}</Label>
-                <Textarea
-                  id="incident-desc"
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                  required
-                  minLength={10}
-                  maxLength={500}
-                  placeholder={t("incidents.form.descriptionPlaceholder")}
-                  rows={4}
-                />
-              </div>
-
-              {/* Type */}
-              <div className="space-y-2">
-                <Label>{t("incidents.form.type")}</Label>
-                <Select
-                  value={form.type}
-                  onValueChange={(v) =>
-                    setForm({ ...form, type: v as IncidentType })
-                  }
-                >
-                  <SelectTrigger>
-                    {t(`incidents.type.${form.type}`)}
-                  </SelectTrigger>
-                  <SelectPopup>
-                    <SelectList>
-                      {TYPE_OPTIONS.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          <SelectItemIndicator />
-                          <SelectItemText>
-                            {t(`incidents.type.${type}`)}
-                          </SelectItemText>
-                        </SelectItem>
-                      ))}
-                    </SelectList>
-                  </SelectPopup>
-                </Select>
-              </div>
-
-              {/* Priority */}
-              <div className="space-y-2">
-                <Label>{t("incidents.form.priority")}</Label>
-                <Select
-                  value={form.priority}
-                  onValueChange={(v) =>
-                    setForm({ ...form, priority: v as Priority })
-                  }
-                >
-                  <SelectTrigger>
-                    {priorityConfig[form.priority]?.label}
-                  </SelectTrigger>
-                  <SelectPopup>
-                    <SelectList>
-                      {PRIORITY_OPTIONS.map((pri) => {
-                        const cfg = priorityConfig[pri];
-                        return (
-                          <SelectItem key={pri} value={pri}>
-                            <SelectItemIndicator />
-                            <SelectItemText>
-                              <span className="flex items-center gap-2">
-                                <span
-                                  className={cn(
-                                    "inline-block h-2 w-2 rounded-full",
-                                    cfg.color,
-                                  )}
-                                />
-                                {cfg.label}
-                              </span>
-                            </SelectItemText>
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectList>
-                  </SelectPopup>
-                </Select>
-              </div>
-
-              {/* Area */}
-              <div className="space-y-2">
-                <Label>{t("incidents.form.area")}</Label>
-                <Select
-                  value={form.areaId ? String(form.areaId) : ""}
-                  onValueChange={(v) =>
-                    setForm({
-                      ...form,
-                      areaId: v ? Number(v) : null,
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    {form.areaId
-                      ? AREA_OPTIONS.find((o) => o.id === form.areaId)?.name ?? ""
-                      : t("incidents.form.selectArea")}
-                  </SelectTrigger>
-                  <SelectPopup>
-                    <SelectList>
-                      <SelectItem value="">
-                        <SelectItemIndicator />
-                        <SelectItemText>{t("incidents.form.selectArea")}</SelectItemText>
-                      </SelectItem>
-                      {AREA_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.id} value={String(opt.id)}>
-                          <SelectItemIndicator />
-                          <SelectItemText>{opt.name}</SelectItemText>
-                        </SelectItem>
-                      ))}
-                    </SelectList>
-                  </SelectPopup>
-                </Select>
-              </div>
+      {/* Board — Trello-like columns */}
+      {loading ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="space-y-3">
+              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-24 w-full rounded-xl" />
+              <Skeleton className="h-24 w-full rounded-xl" />
             </div>
-          </SheetContent>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+          {/* Columna: Abiertos */}
+          <BoardColumn
+            title={t("incidents.tabs.open")}
+            count={stats.open}
+            incidents={visibleIncidents.filter((i) => i.status === "OPEN" || i.status === "ASSIGNED")}
+            color="border-l-destructive"
+            headerBg="bg-destructive/10"
+            headerText="text-destructive"
+          />
+          {/* Columna: En Progreso */}
+          <BoardColumn
+            title={t("incidents.tabs.inProgress")}
+            count={stats.inProgress}
+            incidents={visibleIncidents.filter((i) => i.status === "IN_PROGRESS")}
+            color="border-l-chart-3"
+            headerBg="bg-chart-3/10"
+            headerText="text-chart-3"
+          />
+          {/* Columna: En Espera */}
+          <BoardColumn
+            title={t("incidents.tabs.onHold")}
+            count={stats.onHold}
+            incidents={visibleIncidents.filter((i) => i.status === "ON_HOLD")}
+            color="border-l-amber-500"
+            headerBg="bg-amber-500/10"
+            headerText="text-amber-500"
+          />
+          {/* Columna: Resueltos */}
+          <BoardColumn
+            title={t("incidents.tabs.resolved")}
+            count={stats.resolved}
+            incidents={visibleIncidents.filter((i) => i.status === "RESOLVED")}
+            color="border-l-emerald-500"
+            headerBg="bg-emerald-500/10"
+            headerText="text-emerald-500"
+          />
+          {/* Columna: Cerrados */}
+          <BoardColumn
+            title={t("incidents.tabs.closed")}
+            count={visibleIncidents.filter((i) => i.status === "CLOSED").length}
+            incidents={visibleIncidents.filter((i) => i.status === "CLOSED")}
+            color="border-l-muted-foreground"
+            headerBg="bg-muted"
+            headerText="text-muted-foreground"
+          />
+          {/* Columna: Cancelados */}
+          <BoardColumn
+            title={t("incidents.tabs.canceled")}
+            count={visibleIncidents.filter((i) => i.status === "CANCELED").length}
+            incidents={visibleIncidents.filter((i) => i.status === "CANCELED")}
+            color="border-l-slate-500"
+            headerBg="bg-slate-500/10"
+            headerText="text-slate-500"
+          />
+        </div>
+      )}
 
-          <SheetFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setSheetOpen(false)}
-              disabled={submitting}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={submitting}>
-              {submitting ? (
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-              ) : (
-                <Plus className="mr-1.5 h-4 w-4" />
-              )}
-              {t("incidents.form.submit")}
-            </Button>
-          </SheetFooter>
-        </form>
-      </Sheet>
+      {/* ─── Create Incident Sheet ─── */}
+      <CreateIncidentSheet open={sheetOpen} onOpenChange={setSheetOpen} />
     </div>
   );
 }
 
-function getStatusIcon(status: string) {
-  switch (status) {
-    case "OPEN":
-      return AlertTriangle;
-    case "IN_PROGRESS":
-      return Clock;
-    case "RESOLVED":
-    case "CLOSED":
-      return CheckCircle2;
-    default:
-      return AlertTriangle;
-  }
+// ── Board Column ────────────────────────────────
+
+interface BoardColumnProps {
+  title: string;
+  count: number;
+  incidents: IncidentResponseDTO[];
+  color: string;
+  headerBg: string;
+  headerText: string;
 }
 
-function getStatusStyle(status: string): { bg: string; text: string } {
-  switch (status) {
-    case "OPEN":
-      return { bg: "bg-destructive/10", text: "text-destructive" };
-    case "IN_PROGRESS":
-      return { bg: "bg-chart-3/10", text: "text-chart-3" };
-    case "RESOLVED":
-    case "CLOSED":
-      return { bg: "bg-emerald-500/10", text: "text-emerald-500" };
-    default:
-      return { bg: "bg-muted", text: "text-muted-foreground" };
-  }
-}
+function BoardColumn({ title, count, incidents, color, headerBg, headerText }: BoardColumnProps) {
+  const router = useRouter();
+  const { t } = useI18n();
 
-function getTypeShort(t: (key: string) => string, type: string): string {
-  const key = `incidents.type.${type}`;
-  const label = t(key);
-  return label !== key ? label : type;
+  return (
+    <div className={cn("flex flex-col rounded-lg border border-border", color)}>
+      {/* Header */}
+      <div className={cn("flex items-center justify-between rounded-t-lg px-3 py-2.5", headerBg)}>
+        <div className="flex items-center gap-2">
+          <span className={cn("text-sm font-semibold", headerText)}>{title}</span>
+          <span className={cn("inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold", headerBg, headerText)}>
+            {count}
+          </span>
+        </div>
+      </div>
+
+      {/* Cards */}
+      <div className="flex-1 space-y-2 p-2">
+        {incidents.length === 0 ? (
+          <div className="flex flex-col items-center py-6 text-muted-foreground">
+            <AlertCircle className="mb-2 h-6 w-6 opacity-30" />
+            <p className="text-xs">{t("dashboard.noIncidents")}</p>
+          </div>
+        ) : (
+          incidents.map((incident) => {
+            const priorityCfg = priorityConfig[incident.priority];
+            return (
+              <Card
+                key={incident.id}
+                className="cursor-pointer transition-colors hover:border-primary/50"
+                onClick={() => router.push(`/dashboard/incidentes/${incident.id}`)}
+              >
+                <CardContent className="p-3">
+                  <p className="truncate text-sm font-medium text-card-foreground">
+                    {incident.title}
+                  </p>
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                    {incident.areaName || incident.type}
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span
+                      className={cn(
+                        "inline-block h-2 w-2 rounded-full",
+                        priorityCfg?.color || "bg-muted",
+                      )}
+                    />
+                    <span className="text-[10px] text-muted-foreground">
+                      {incident.priority}
+                    </span>
+                    {incident.assignedToName && (
+                      <>
+                        <span className="text-[10px] text-muted-foreground">·</span>
+                        <User className="inline h-2.5 w-2.5 text-muted-foreground" />
+                        <span className="truncate text-[10px] text-muted-foreground">
+                          {incident.assignedToName}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <p className="mt-1 text-[10px] text-muted-foreground">
+                    {new Date(incident.createdAt).toLocaleDateString()}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
 }

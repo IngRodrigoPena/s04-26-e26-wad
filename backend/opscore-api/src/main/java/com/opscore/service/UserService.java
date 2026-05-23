@@ -118,6 +118,29 @@ public class UserService {
                 .toList();
     }
 
+    public List<UserResponseDTO> getAssignableUsers() {
+
+        return userRepository
+                .findByActiveTrueAndRoleNameIn(List.of("TECHNICIAN"))
+                .stream()
+                .map(user -> UserResponseDTO.builder()
+                        .id(user.getId())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .email(user.getEmail())
+                        .role(user.getRole().getName())
+                        .area(
+                                user.getArea() != null
+                                        ? user.getArea().getName()
+                                        : null
+                        )
+                        .isActive(user.isActive())
+                        .avatar(user.getAvatar())
+                        .build()
+                )
+                .toList();
+    }
+
     public UserResponseDTO getCurrentUser() {
         String email = SecurityUtils.getCurrentUserEmail();
         User user = userRepository.findByEmail(email)

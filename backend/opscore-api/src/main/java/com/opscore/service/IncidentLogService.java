@@ -16,4 +16,6 @@ public interface IncidentLogService {
     );
 
     List<IncidentTimelineResponseDTO> getIncidentTimeline(Long incidentId);
+
+    IncidentTimelineResponseDTO addAnnotation(Long incidentId, String comment);
 }

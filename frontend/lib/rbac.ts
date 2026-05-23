@@ -21,9 +21,9 @@ export interface MenuSection {
 }
 
 export const MENU_SECTIONS: MenuSection[] = [
-  { key: "sistema-gestion", label: "nav.sistemaGestion", items: ["dashboard", "incidentes", "reportes", "asignaciones"] },
+  { key: "sistema-gestion", label: "nav.sistemaGestion", items: ["dashboard", "incidentes", "reportes"] },
   { key: "personal", label: "nav.personal", items: ["perfil"] },
-  { key: "configuracion", label: "nav.configuracionSection", items: ["usuarios", "roles", "areas", "estados", "configuracion"] },
+  { key: "configuracion", label: "nav.configuracionSection", items: ["usuarios", "roles", "areas", "estados", "catalogos", "configuracion"] },
 ];
 
 const navItems: NavItem[] = [
@@ -46,13 +46,6 @@ const navItems: NavItem[] = [
     icon: "BarChart3",
     key: "reportes",
     label: "nav.reportes",
-    roles: [Role.ADMIN, Role.MANAGER, Role.SUPERVISOR],
-  },
-  {
-    href: "/dashboard/asignaciones",
-    icon: "UserCheck",
-    key: "asignaciones",
-    label: "nav.asignaciones",
     roles: [Role.ADMIN, Role.MANAGER, Role.SUPERVISOR],
   },
   {
@@ -88,6 +81,13 @@ const navItems: NavItem[] = [
     icon: "ListChecks",
     key: "estados",
     label: "nav.estados",
+    roles: [Role.ADMIN, Role.MANAGER, Role.SUPERVISOR],
+  },
+  {
+    href: "/dashboard/catalogos",
+    icon: "BookOpen",
+    key: "catalogos",
+    label: "nav.catalogos",
     roles: [Role.ADMIN, Role.MANAGER, Role.SUPERVISOR],
   },
   {
@@ -161,7 +161,7 @@ export function getRoleColor(role: Role | string | null | undefined): string {
     case Role.SUPERVISOR:
       return "bg-primary/10 text-primary";
     case Role.TECHNICIAN:
-      return "bg-accent/10 text-accent";
+      return "bg-amber-500/10 text-amber-500";
     case Role.OPERATOR:
       return "bg-muted text-muted-foreground";
     default:

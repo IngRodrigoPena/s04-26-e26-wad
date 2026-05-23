@@ -8,6 +8,8 @@ import com.opscore.entity.User;
 import com.opscore.exception.ResourceNotFoundException;
 import com.opscore.repository.IncidentLogRepository;
 import com.opscore.repository.IncidentRepository;
+import com.opscore.repository.UserRepository;
+import com.opscore.security.SecurityUtils;
 import com.opscore.service.IncidentLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.util.List;
 public class IncidentLogServiceImpl implements IncidentLogService {
     private final IncidentLogRepository incidentLogRepository;
     private final IncidentRepository incidentRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void logAction(
@@ -49,8 +52,31 @@ public class IncidentLogServiceImpl implements IncidentLogService {
                 .toList();
     }
 
+    @Override
+    public IncidentTimelineResponseDTO addAnnotation(Long incidentId, String comment) {
+        Incident incident = incidentRepository.findById(incidentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Incident not found"));
+
+        String currentEmail = SecurityUtils.getCurrentUserEmail();
+        User currentUser = userRepository.findByEmail(currentEmail)
+                .orElse(null);
+
+        IncidentLog log = IncidentLog.builder()
+                .incident(incident)
+                .user(currentUser)
+                .action(IncidentAction.COMMENT_ADDED)
+                .comment(comment)
+                .createdAt(LocalDateTime.now())
+                .build();
+        IncidentLog saved = incidentLogRepository.save(log);
+
+        return mapToTimelineDTO(saved);
+    }
+
     private IncidentTimelineResponseDTO mapToTimelineDTO(IncidentLog log) {
         return new IncidentTimelineResponseDTO(
+                log.getId(),
                 log.getAction(),
                 log.getUser() != null
                         ? log.getUser().getId()

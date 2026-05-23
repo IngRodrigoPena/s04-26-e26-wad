@@ -1,23 +1,26 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/components/providers/i18n-provider";
 import { useAuthStore } from "@/features/auth/stores/auth-store";
 import { useIncidentsStore } from "@/features/incidents/stores/incidents-store";
+import { CreateIncidentSheet } from "@/features/incidents/components/create-incident-sheet";
+import { CreateUserSheet } from "@/features/users/components/create-user-sheet";
 import { getRoleLabel, getRoleColor, type Role } from "@/lib/rbac";
 import {
+  BarChart3,
+  TrendingUp,
+  Activity,
   AlertTriangle,
+  RefreshCw,
+  Shield,
+  Users,
+  Plus,
+  UserPlus,
+  List,
   CheckCircle2,
   Clock,
-  Plus,
-  BarChart3,
-  Users,
-  List,
-  UserCheck,
-  Shield,
-  TrendingUp,
-  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -31,19 +34,59 @@ export default function DashboardPage() {
     incidents,
     loading,
     fetchIncidents,
-    getIncidentStats,
   } = useIncidentsStore();
 
   useEffect(() => {
     fetchIncidents();
   }, []);
 
+  // Sheet state for creating incident
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [userSheetOpen, setUserSheetOpen] = useState(false);
+
+  const AREA_OPTIONS = [
+    { id: 1, name: "PRODUCTION" },
+    { id: 2, name: "CONTABILITY" },
+    { id: 3, name: "RRHH" },
+    { id: 4, name: "IT" },
+    { id: 5, name: "LOGISTICS" },
+  ];
+
   const role = user?.role as Role | undefined;
   const roleLabel = role ? getRoleLabel(role, "es") : "";
   const roleColor = role ? getRoleColor(role) : "";
 
-  const stats = getIncidentStats();
-  const recentIncidents = [...incidents]
+  // Same role-based filtering as incidents page
+  const isSupervisor = user?.role === "SUPERVISOR";
+  const isTechnician = user?.role === "TECHNICIAN";
+  const isOperator = user?.role === "OPERATOR";
+  const visibleIncidents = isSupervisor
+    ? incidents.filter((i) => i.areaName === user?.area)
+    : isTechnician
+      ? incidents.filter((i) => i.assignedToId === user?.id)
+      : isOperator
+        ? incidents.filter((i) => i.reportedById === user?.id)
+        : incidents;
+
+  // Calculate stats from filtered incidents
+  const total = visibleIncidents.length;
+  const open = visibleIncidents.filter((i) => i.status === "OPEN" || i.status === "ASSIGNED").length;
+  const inProgress = visibleIncidents.filter((i) => i.status === "IN_PROGRESS").length;
+  const closed = visibleIncidents.filter((i) => i.status === "CLOSED" || i.status === "RESOLVED" || i.status === "CANCELED").length;
+  const byCategory = visibleIncidents.reduce<Record<string, number>>((acc, i) => {
+    acc[i.type] = (acc[i.type] || 0) + 1;
+    return acc;
+  }, {});
+  const resolvedList = visibleIncidents.filter((i) => i.status === "RESOLVED" || i.status === "CLOSED");
+  const avgResolutionTime = resolvedList.length > 0
+    ? resolvedList.reduce((acc, i) => {
+        const created = new Date(i.createdAt).getTime();
+        const updated = new Date(i.updatedAt).getTime();
+        return acc + (updated - created) / 60000;
+      }, 0) / resolvedList.length
+    : 0;
+
+  const recentIncidents = [...visibleIncidents]
     .sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -54,7 +97,7 @@ export default function DashboardPage() {
     {
       key: "total",
       label: "dashboard.incidentsTotal",
-      value: stats.total,
+      value: total,
       icon: BarChart3,
       color: "text-primary",
       bg: "bg-primary/10",
@@ -64,20 +107,20 @@ export default function DashboardPage() {
     {
       key: "open",
       label: "dashboard.incidentsOpen",
-      value: stats.open,
+      value: open,
       icon: AlertTriangle,
       color: "text-destructive",
       bg: "bg-destructive/10",
       change:
-        stats.open > 0
+        open > 0
           ? t("dashboard.requiresAttention")
           : t("dashboard.allGood"),
-      trend: stats.open > 0 ? "down" : "up" as const,
+      trend: open > 0 ? "down" : "up" as const,
     },
     {
       key: "inProgress",
       label: "dashboard.incidentsInProgress",
-      value: stats.inProgress,
+      value: inProgress,
       icon: Clock,
       color: "text-chart-3",
       bg: "bg-chart-3/10",
@@ -87,13 +130,13 @@ export default function DashboardPage() {
     {
       key: "closed",
       label: "dashboard.incidentsResolved",
-      value: stats.closed,
+      value: closed,
       icon: CheckCircle2,
       color: "text-emerald-500",
       bg: "bg-emerald-500/10",
       change:
-        stats.total > 0
-          ? `${((stats.closed / stats.total) * 100).toFixed(1)}% ${t("dashboard.resolved")}`
+        total > 0
+          ? `${((closed / total) * 100).toFixed(1)}% ${t("dashboard.resolved")}`
           : "0%",
       trend: "up" as const,
     },
@@ -118,7 +161,6 @@ export default function DashboardPage() {
         ];
       case "SUPERVISOR":
         return [
-          { icon: UserCheck, label: "nav.asignaciones", color: "text-primary" },
           { icon: Plus, label: "dashboard.createIncident", color: "text-chart-3" },
           { icon: BarChart3, label: "nav.reportes", color: "text-primary" },
         ];
@@ -150,25 +192,26 @@ export default function DashboardPage() {
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-foreground">
-              {mounted ? t("dashboard.welcome") : "Dashboard"}
+              {mounted
+                ? t("dashboard.welcome", { name: user?.firstName || "" })
+                : "Dashboard"}
             </h1>
             <Badge variant="outline" className={cn("text-xs font-medium", roleColor)}>
               {roleLabel}
             </Badge>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {user?.firstName
-              ? `${mounted ? t("dashboard.as") : "as"} ${roleLabel} · ${user.firstName}`
-              : roleLabel}
-          </p>
         </div>
         <div className="flex gap-2">
-          <Link href="/dashboard/incidentes">
-            <Button size="sm">
-              <Plus className="mr-1.5 h-4 w-4" />
-              {t("dashboard.createIncident")}
+          <Button size="sm" onClick={() => setSheetOpen(true)}>
+            <Plus className="mr-1.5 h-4 w-4" />
+            {t("dashboard.createIncident")}
+          </Button>
+          {(role === "ADMIN" || role === "MANAGER") && (
+            <Button size="sm" variant="outline" onClick={() => setUserSheetOpen(true)}>
+              <UserPlus className="mr-1.5 h-4 w-4" />
+              {t("users.form.submit")}
             </Button>
-          </Link>
+          )}
           {(role === "ADMIN" || role === "MANAGER" || role === "SUPERVISOR") && (
             <Link href="/dashboard/canvas">
               <Button variant="outline" size="sm">
@@ -339,16 +382,16 @@ export default function DashboardPage() {
                   </div>
                 ))}
               </div>
-            ) : Object.keys(stats.byCategory).length === 0 ? (
+              ) : Object.keys(byCategory).length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
                 <BarChart3 className="h-10 w-10 opacity-40" />
                 <p className="text-sm">{t("dashboard.noIncidents")}</p>
               </div>
             ) : (
-              Object.entries(sortByValue(stats.byCategory)).map(
+              Object.entries(sortByValue(byCategory)).map(
                 ([type, count]) => {
                   const percentage =
-                    stats.total > 0 ? (count / stats.total) * 100 : 0;
+                    total > 0 ? (count / total) * 100 : 0;
                   return (
                     <div key={type} className="space-y-1.5">
                       <div className="flex items-center justify-between text-sm">
@@ -377,7 +420,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Average Resolution Time */}
-      {stats.avgResolutionTime > 0 && (
+      {avgResolutionTime > 0 && (
         <div className="rounded-xl border border-border bg-gradient-to-r from-primary/10 via-chart-3/10 to-chart-4/10 p-5">
           <div className="flex items-center justify-between">
             <div>
@@ -385,11 +428,11 @@ export default function DashboardPage() {
                 {t("dashboard.avgResolutionTime")}
               </h3>
               <p className="mt-1 text-3xl font-bold text-primary">
-                {Math.floor(stats.avgResolutionTime / 60)}h{" "}
-                {Math.floor(stats.avgResolutionTime % 60)}m
+                {Math.floor(avgResolutionTime / 60)}h{" "}
+                {Math.floor(avgResolutionTime % 60)}m
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {t("dashboard.basedOn")} {stats.closed}{" "}
+                {t("dashboard.basedOn")} {closed}{" "}
                 {t("dashboard.closedIncidents")}
               </p>
             </div>
@@ -397,6 +440,10 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Create Incident Sheet */}
+      <CreateIncidentSheet open={sheetOpen} onOpenChange={setSheetOpen} />
+      <CreateUserSheet open={userSheetOpen} onOpenChange={setUserSheetOpen} />
     </div>
   );
 }

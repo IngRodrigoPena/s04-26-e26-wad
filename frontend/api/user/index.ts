@@ -36,6 +36,12 @@ export const usersApi = {
     return data;
   },
 
+  /** GET /users/assignable — requires ADMIN or SUPERVISOR */
+  getAssignable: async (): Promise<UserResponseDTO[]> => {
+    const { data } = await apiClient.get("/users/assignable");
+    return data;
+  },
+
   /** GET /users/me */
   me: async (): Promise<UserResponseDTO> => {
     const { data } = await apiClient.get("/users/me");

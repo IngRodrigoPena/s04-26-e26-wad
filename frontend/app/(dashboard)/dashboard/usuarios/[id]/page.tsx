@@ -21,7 +21,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UserDetailPage() {
-  const { t, mounted } = useI18n();
+  const { t, locale, mounted } = useI18n();
   const params = useParams();
   const router = useRouter();
   const [user, setUser] = useState<UserResponseDTO | null>(null);
@@ -34,7 +34,7 @@ export default function UserDetailPage() {
     usersApi
       .getById(userId)
       .then(setUser)
-      .catch((err) => setError(err?.response?.data?.message || "Error al cargar usuario"))
+      .catch((err) => setError(err?.response?.data?.message || t("users.loadError")))
       .finally(() => setLoading(false));
   }, [userId]);
 
@@ -53,10 +53,10 @@ export default function UserDetailPage() {
     return (
       <div className="flex flex-col items-center gap-4 py-20 text-muted-foreground">
         <AlertTriangle className="h-12 w-12 opacity-40" />
-        <p className="text-sm">{error || "Usuario no encontrado"}</p>
+        <p className="text-sm">{error || t("users.notFound")}</p>
         <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeft className="mr-1.5 h-4 w-4" />
-          Volver
+          {t("users.back")}
         </Button>
       </div>
     );
@@ -64,23 +64,31 @@ export default function UserDetailPage() {
 
   const role = user.role as Role;
   const roleColor = getRoleColor(role);
-  const roleLabel = getRoleLabel(role, "es");
+  const roleLabel = getRoleLabel(role, locale);
   const initials = `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase() || "?";
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <Button variant="ghost" size="sm" onClick={() => router.back()}>
         <ArrowLeft className="mr-1.5 h-4 w-4" />
-        Volver a usuarios
+        {t("users.backToList")}
       </Button>
 
       {/* Hero */}
       <div className="relative overflow-hidden rounded-xl border border-border bg-gradient-to-br from-card via-card to-primary/5 p-6">
         <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 blur-3xl" />
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-5">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-2xl font-bold text-primary-foreground shadow-lg">
-            {initials}
-          </div>
+          {user.avatar ? (
+            <img
+              src={user.avatar}
+              alt={`${user.firstName} ${user.lastName}`}
+              className="h-20 w-20 shrink-0 rounded-2xl object-cover ring-2 ring-border shadow-lg"
+            />
+          ) : (
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-2xl font-bold text-primary-foreground shadow-lg">
+              {initials}
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-bold text-foreground">
               {user.firstName} {user.lastName}
@@ -122,41 +130,41 @@ export default function UserDetailPage() {
               <Shield className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle>Datos del Usuario</CardTitle>
-              <CardDescription>Información personal y de acceso</CardDescription>
+              <CardTitle>{t("users.detail.title")}</CardTitle>
+              <CardDescription>{t("users.detail.description")}</CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-lg border border-border p-3">
-              <p className="text-xs text-muted-foreground">Nombre</p>
+              <p className="text-xs text-muted-foreground">{t("profile.firstName")}</p>
               <p className="mt-0.5 text-sm font-medium text-foreground">{user.firstName}</p>
             </div>
             <div className="rounded-lg border border-border p-3">
-              <p className="text-xs text-muted-foreground">Apellido</p>
+              <p className="text-xs text-muted-foreground">{t("profile.lastName")}</p>
               <p className="mt-0.5 text-sm font-medium text-foreground">{user.lastName}</p>
             </div>
             <div className="rounded-lg border border-border p-3">
-              <p className="text-xs text-muted-foreground">Email</p>
+              <p className="text-xs text-muted-foreground">{t("profile.email")}</p>
               <p className="mt-0.5 text-sm font-medium text-foreground">{user.email}</p>
             </div>
             <div className="rounded-lg border border-border p-3">
-              <p className="text-xs text-muted-foreground">Área</p>
-              <p className="mt-0.5 text-sm font-medium text-foreground">{user.area || "Sin área"}</p>
+              <p className="text-xs text-muted-foreground">{t("users.detail.area")}</p>
+              <p className="mt-0.5 text-sm font-medium text-foreground">{user.area || t("users.detail.noArea")}</p>
             </div>
             <div className="rounded-lg border border-border p-3">
-              <p className="text-xs text-muted-foreground">Rol</p>
+              <p className="text-xs text-muted-foreground">{t("profile.role")}</p>
               <div className="mt-0.5 flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">{roleLabel}</span>
                 <Badge variant="outline" className={cn("text-[10px]", roleColor)}>{role}</Badge>
               </div>
             </div>
             <div className="rounded-lg border border-border p-3">
-              <p className="text-xs text-muted-foreground">Estado</p>
+              <p className="text-xs text-muted-foreground">{t("users.detail.status")}</p>
               <div className="mt-0.5 flex items-center gap-2">
                 <span className={cn("inline-block h-2 w-2 rounded-full", user.active ? "bg-emerald-500" : "bg-muted-foreground/40")} />
-                <span className="text-sm font-medium text-foreground">{user.active ? "Activo" : "Inactivo"}</span>
+                <span className="text-sm font-medium text-foreground">{user.active ? t("users.active") : t("users.inactive")}</span>
               </div>
             </div>
           </div>

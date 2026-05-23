@@ -122,7 +122,7 @@ public class IncidentServiceImpl implements IncidentService {
                 saved,
                 saved.getReportedBy(),
                 IncidentAction.INCIDENT_CREATED,
-                "Incident created"
+                "Incidente creado por " + (saved.getReportedBy() != null ? saved.getReportedBy().getFirstName() : "Sistema")
         );
 
         return mapToResponse(saved);
@@ -203,6 +203,8 @@ public class IncidentServiceImpl implements IncidentService {
         // 3. Mapear a DTO
         return assignments.stream()
                 .map(a -> new AssignmentResponseDTO(
+                        a.getId(),
+                        a.getIncident().getId(),
                         a.getAssignedTo().getId(),
                         a.getAssignedTo().getFirstName(),
                         a.getAssignedBy().getId(),
@@ -212,7 +214,7 @@ public class IncidentServiceImpl implements IncidentService {
                 .toList();
     }
 
-    public void resolveIncident(Long incidentId) {
+    public IncidentResponseDTO resolveIncident(Long incidentId, String comment) {
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Incident not found"));
@@ -237,12 +239,14 @@ public class IncidentServiceImpl implements IncidentService {
                 incident,
                 currentUser,
                 IncidentAction.RESOLVED,
-                "Incident resolved"
+                comment != null ? comment : "Incidente resuelto"
         );
+
+        return mapToResponse(updatedIncident);
     }
 
     @Override
-    public void startIncident(Long incidentId) {
+    public IncidentResponseDTO startIncident(Long incidentId, String comment) {
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Incident not found"));
@@ -264,12 +268,14 @@ public class IncidentServiceImpl implements IncidentService {
                 incident,
                 currentUser,
                 IncidentAction.STARTED,
-                "Incident work started"
+                comment != null ? comment : "Trabajo iniciado"
         );
+
+        return mapToResponse(updatedIncident);
     }
 
     @Override
-    public void holdIncident(Long incidentId) {
+    public IncidentResponseDTO holdIncident(Long incidentId, String comment) {
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Incident not found"));
@@ -290,12 +296,14 @@ public class IncidentServiceImpl implements IncidentService {
                 incident,
                 currentUser,
                 IncidentAction.PUT_ON_HOLD,
-                "Incident put on hold"
+                comment != null ? comment : "Incidente en espera"
         );
+
+        return mapToResponse(updatedIncident);
     }
 
     @Override
-    public void cancelIncident(Long incidentId) {
+    public IncidentResponseDTO cancelIncident(Long incidentId, String comment) {
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Incident not found"));
@@ -320,12 +328,14 @@ public class IncidentServiceImpl implements IncidentService {
                 incident,
                 currentUser,
                 IncidentAction.CANCELED,
-                "Incident canceled"
+                comment != null ? comment : "Incidente cancelado"
         );
+
+        return mapToResponse(updatedIncident);
     }
 
     @Override
-    public void closeIncident(Long incidentId) {
+    public IncidentResponseDTO closeIncident(Long incidentId, String comment) {
         Incident incident = incidentRepository.findById(incidentId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Incident not found"));
@@ -346,8 +356,10 @@ public class IncidentServiceImpl implements IncidentService {
                 incident,
                 currentUser,
                 IncidentAction.CLOSED,
-                "Incident closed"
+                comment != null ? comment : "Incidente cerrado"
         );
+
+        return mapToResponse(updatedIncident);
     }
 
     @Override

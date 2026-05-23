@@ -31,7 +31,7 @@
   },
   "nav": {
     "sistemaGestion": "Sistema de Gestión",
-    "dashboard": "Dashboard",
+    "dashboard": "Resumen",
     "incidentes": "Incidentes",
     "reportes": "Reportes",
     "asignaciones": "Asignaciones",
@@ -42,12 +42,13 @@
     "roles": "Roles",
     "areas": "Áreas",
     "estados": "Estados",
+    "catalogos": "Catálogos",
     "configuracion": "Configuración",
     "logout": "Cerrar sesión",
     "search": "Buscar incidentes..."
   },
   "dashboard": {
-    "welcome": "Bienvenido al Dashboard",
+    "welcome": "Bienvenido {name}",
     "description": "Panel de control del sistema de gestión de incidentes.",
     "statsTitle": "Resumen General",
     "incidentsOpen": "Incidentes Abiertos",
@@ -110,7 +111,31 @@
     "registered": "{count} usuarios registrados",
     "noUsers": "No hay usuarios registrados",
     "active": "Activo",
-    "inactive": "Inactivo"
+    "inactive": "Inactivo",
+    "backToList": "Volver a usuarios",
+    "back": "Volver",
+    "notFound": "Usuario no encontrado",
+    "loadError": "Error al cargar usuario",
+    "detail": {
+      "title": "Datos del Usuario",
+      "description": "Información personal y de acceso",
+      "area": "Área",
+      "noArea": "Sin área",
+      "status": "Estado"
+    },
+    "form": {
+      "sheetTitle": "Crear Usuario",
+      "firstNamePlaceholder": "Ej: Juan",
+      "lastNamePlaceholder": "Ej: Pérez",
+      "emailPlaceholder": "ej: juan@ejemplo.com",
+      "password": "Contraseña",
+      "role": "Rol",
+      "area": "Área",
+      "noArea": "Sin área",
+      "cancel": "Cancelar",
+      "submit": "Crear Usuario",
+      "errorCreating": "No se pudo crear el usuario"
+    }
   },
   "areasPage": {
     "title": "Áreas Operativas",
@@ -142,6 +167,41 @@
     "description": "Descripción",
     "nextStates": "Transiciones posibles",
     "noStates": "No hay estados configurados"
+  },
+  "catalogosPage": {
+    "title": "Catálogos del Sistema",
+    "subtitle": "Referencia de clasificaciones y valores del sistema",
+    "footer": "Estos valores son definidos por el sistema y no pueden modificarse desde la interfaz.",
+    "tabs": {
+      "types": "Tipos de Incidente",
+      "priorities": "Prioridades",
+      "categories": "Categorías",
+      "actions": "Acciones"
+    },
+    "priority": {
+      "LOW": "Baja",
+      "MEDIUM": "Media",
+      "HIGH": "Alta",
+      "CRITICAL": "Crítica"
+    },
+    "category": {
+      "SAFETY": "Seguridad",
+      "QUALITY": "Calidad",
+      "OPERATIONS": "Operaciones",
+      "MAINTENANCE": "Mantenimiento",
+      "OTHER": "Otro"
+    },
+    "action": {
+      "INCIDENT_CREATED": "Creado",
+      "ASSIGNED": "Asignado",
+      "REASSIGNED": "Reasignado",
+      "STARTED": "Iniciado",
+      "PUT_ON_HOLD": "En Espera",
+      "RESOLVED": "Resuelto",
+      "CLOSED": "Cerrado",
+      "CANCELED": "Cancelado",
+      "COMMENT_ADDED": "Comentario"
+    }
   },
   "configuracionPage": {
     "title": "Configuración del Sistema",
@@ -189,7 +249,10 @@
       "all": "Todos",
       "open": "Abiertos",
       "inProgress": "En Progreso",
+      "onHold": "En Espera",
+      "resolved": "Resueltos",
       "closed": "Cerrados",
+      "canceled": "Cancelados",
       "myIncidents": "Mis Incidentes"
     },
     "status": {
@@ -212,7 +275,11 @@
       "selectArea": "Sin área",
       "submit": "Crear Incidente",
       "creating": "Creando...",
-      "sheetTitle": "Nuevo Incidente"
+      "sheetTitle": "Nuevo Incidente",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "create": "Crear",
+      "errorCreating": "No se pudo crear el incidente"
     },
     "type": {
       "MACHINE_FAILURE": "Fallo de Máquina",

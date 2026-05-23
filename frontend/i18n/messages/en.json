@@ -42,12 +42,13 @@
     "roles": "Roles",
     "areas": "Areas",
     "estados": "Status",
+    "catalogos": "Catalogs",
     "configuracion": "Settings",
     "logout": "Logout",
     "search": "Search incidents..."
   },
   "dashboard": {
-    "welcome": "Welcome to Dashboard",
+    "welcome": "Welcome {name}",
     "description": "Incident Management System control panel.",
     "statsTitle": "General Overview",
     "incidentsOpen": "Open Incidents",
@@ -110,7 +111,31 @@
     "registered": "{count} registered users",
     "noUsers": "No registered users",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "backToList": "Back to users",
+    "back": "Back",
+    "notFound": "User not found",
+    "loadError": "Error loading user",
+    "detail": {
+      "title": "User Data",
+      "description": "Personal and access information",
+      "area": "Area",
+      "noArea": "No area",
+      "status": "Status"
+    },
+    "form": {
+      "sheetTitle": "Create User",
+      "firstNamePlaceholder": "E.g.: John",
+      "lastNamePlaceholder": "E.g.: Doe",
+      "emailPlaceholder": "e.g.: john@example.com",
+      "password": "Password",
+      "role": "Role",
+      "area": "Area",
+      "noArea": "No area",
+      "cancel": "Cancel",
+      "submit": "Create User",
+      "errorCreating": "Could not create user"
+    }
   },
   "rolesPage": {
     "title": "System Roles",
@@ -142,6 +167,41 @@
     "description": "Description",
     "nextStates": "Available transitions",
     "noStates": "No states configured"
+  },
+  "catalogosPage": {
+    "title": "System Catalogs",
+    "subtitle": "Reference of system classifications and values",
+    "footer": "These values are defined by the system and cannot be modified from the interface.",
+    "tabs": {
+      "types": "Incident Types",
+      "priorities": "Priorities",
+      "categories": "Categories",
+      "actions": "Actions"
+    },
+    "priority": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "CRITICAL": "Critical"
+    },
+    "category": {
+      "SAFETY": "Safety",
+      "QUALITY": "Quality",
+      "OPERATIONS": "Operations",
+      "MAINTENANCE": "Maintenance",
+      "OTHER": "Other"
+    },
+    "action": {
+      "INCIDENT_CREATED": "Created",
+      "ASSIGNED": "Assigned",
+      "REASSIGNED": "Reassigned",
+      "STARTED": "Started",
+      "PUT_ON_HOLD": "On Hold",
+      "RESOLVED": "Resolved",
+      "CLOSED": "Closed",
+      "CANCELED": "Canceled",
+      "COMMENT_ADDED": "Comment"
+    }
   },
   "configuracionPage": {
     "title": "System Settings",
@@ -189,7 +249,10 @@
       "all": "All",
       "open": "Open",
       "inProgress": "In Progress",
+      "onHold": "On Hold",
+      "resolved": "Resolved",
       "closed": "Closed",
+      "canceled": "Canceled",
       "myIncidents": "My Incidents"
     },
     "status": {
@@ -212,7 +275,11 @@
       "selectArea": "No area",
       "submit": "Create Incident",
       "creating": "Creating...",
-      "sheetTitle": "New Incident"
+      "sheetTitle": "New Incident",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "create": "Create",
+      "errorCreating": "Could not create incident"
     },
     "type": {
       "MACHINE_FAILURE": "Machine Failure",

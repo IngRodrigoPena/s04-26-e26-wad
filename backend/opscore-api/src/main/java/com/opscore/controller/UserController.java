@@ -30,6 +30,15 @@ public class UserController {
                 .body(response);
     }
 
+    @GetMapping("/assignable")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERVISOR')")
+    public ResponseEntity<List<UserResponseDTO>> getAssignableUsers() {
+
+        return ResponseEntity.ok(
+                userService.getAssignableUsers()
+        );
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {

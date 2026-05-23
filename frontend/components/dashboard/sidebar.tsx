@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { X, LayoutDashboard, AlertTriangle, BarChart3, Users, UserCheck, UserCircle, Shield, ListChecks, Settings, Building2 } from "lucide-react";
+import { X, LayoutDashboard, AlertTriangle, BarChart3, Users, UserCheck, UserCircle, Shield, ListChecks, Settings, Building2, BookOpen } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { NavItem, MenuSection } from "@/lib/rbac";
 
@@ -18,6 +18,7 @@ const iconMap: Record<string, LucideIcon> = {
   ListChecks,
   Settings,
   Building2,
+  BookOpen,
 };
 
 interface SidebarProps {
@@ -68,7 +69,9 @@ export function Sidebar({ isOpen, onClose, sections, t, user }: SidebarProps) {
                 </p>
                 {items.map((item) => {
                   const Icon = iconMap[item.icon];
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                  const isActive = item.href === "/dashboard"
+                    ? pathname === "/dashboard"
+                    : pathname === item.href || pathname.startsWith(item.href + "/");
                   return (
                     <Link
                       key={item.href}

@@ -19,7 +19,7 @@ interface IncidentsState {
   // Actions
   fetchIncidents: () => Promise<void>;
   createIncident: (data: IncidentRequestDTO) => Promise<IncidentResponseDTO>;
-  resolveIncident: (id: number) => Promise<void>;
+  resolveIncident: (id: number, comment?: string) => Promise<void>;
 
   // Computed
   getIncidentsByStatus: (status: IncidentStatus) => IncidentResponseDTO[];
@@ -90,10 +90,10 @@ export const useIncidentsStore = create<IncidentsState>()(
         }
       },
 
-      resolveIncident: async (id: number) => {
+      resolveIncident: async (id: number, comment: string = "Resuelto desde listado") => {
         set({ loading: true, error: null });
         try {
-          await incidentsApi.resolve(id);
+          await incidentsApi.resolve(id, comment);
           set((state) => ({
             incidents: state.incidents.map((inc) =>
               inc.id === id

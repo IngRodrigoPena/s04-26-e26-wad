@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTheme } from "@/components/providers/theme-provider";
 import { useI18n } from "@/components/providers/i18n-provider";
+import { useAuthStore } from "@/features/auth/stores/auth-store";
 import { Sun, Moon, Bell, Cog, Info, Server, Globe, Volume2, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +39,7 @@ type HealthStatus = (typeof HEALTH_STATUS)[keyof typeof HEALTH_STATUS];
 export default function ConfiguracionPage() {
   const { t, mounted, locale, setLocale } = useI18n();
   const { theme, setTheme } = useTheme();
+  const { user } = useAuthStore();
   const { apiBaseUrl, setApiBaseUrl } = useConfigStore();
   const [notifSettings, setNotifSettings] = useState({
     email: true,
@@ -59,10 +61,13 @@ export default function ConfiguracionPage() {
     }
   };
 
+  const isAdmin = user?.role === "ADMIN";
+  const tabCount = isAdmin ? 3 : 2;
+
   if (!mounted) return null;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">
@@ -74,10 +79,13 @@ export default function ConfiguracionPage() {
       </div>
 
       <Tabs defaultValue="appearance" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 md:w-[520px]">
+        <TabsList className="grid w-full"
+          style={{ gridTemplateColumns: `repeat(${tabCount}, minmax(0, 1fr))` }}>
           <TabsTrigger value="appearance">Apariencia</TabsTrigger>
           <TabsTrigger value="notifications">Notificaciones</TabsTrigger>
-          <TabsTrigger value="info">Información</TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger value="info">Información</TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="appearance">

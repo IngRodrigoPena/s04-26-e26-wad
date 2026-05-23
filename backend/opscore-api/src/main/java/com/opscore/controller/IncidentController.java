@@ -1,6 +1,8 @@
 package com.opscore.controller;
 
 import com.opscore.dto.assignment.AssignmentResponseDTO;
+import com.opscore.dto.incident.AnnotationRequestDTO;
+import com.opscore.dto.incident.IncidentActionRequestDTO;
 import com.opscore.dto.incident.IncidentRequestDTO;
 import com.opscore.dto.incident.IncidentResponseDTO;
 import com.opscore.dto.incident.IncidentTimelineResponseDTO;
@@ -72,43 +74,61 @@ public class IncidentController {
     //tecnico resuelve incidente
     @PreAuthorize("hasAnyRole('TECHNICIAN', 'ADMIN')")
     @PatchMapping("/{id}/resolve")
-    public ResponseEntity<Void> resolveIncident(@PathVariable Long id) {
-
-        incidentService.resolveIncident(id);
-
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<IncidentResponseDTO> resolveIncident(
+            @PathVariable Long id,
+            @Valid @RequestBody IncidentActionRequestDTO body
+    ) {
+        return ResponseEntity.ok(
+                incidentService.resolveIncident(id, body.getComment())
+        );
     }
 
     //Start
     @PreAuthorize("hasAnyRole('TECHNICIAN', 'ADMIN')")
     @PatchMapping("/{id}/start")
-    public ResponseEntity<Void> startIncident(@PathVariable Long id) {
-        incidentService.startIncident(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<IncidentResponseDTO> startIncident(
+            @PathVariable Long id,
+            @Valid @RequestBody IncidentActionRequestDTO body
+    ) {
+        return ResponseEntity.ok(
+                incidentService.startIncident(id, body.getComment())
+        );
     }
 
     //hold
     @PreAuthorize("hasAnyRole('TECHNICIAN', 'ADMIN')")
     @PatchMapping("/{id}/hold")
-    public ResponseEntity<Void> holdIncident(@PathVariable Long id) {
-        incidentService.holdIncident(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<IncidentResponseDTO> holdIncident(
+            @PathVariable Long id,
+            @Valid @RequestBody IncidentActionRequestDTO body
+    ) {
+        return ResponseEntity.ok(
+                incidentService.holdIncident(id, body.getComment())
+        );
     }
 
     //cancel
     @PreAuthorize("hasAnyRole('SUPERVISOR', 'ADMIN')")
     @PatchMapping("/{id}/cancel")
-    public ResponseEntity<Void> cancelIncident(@PathVariable Long id) {
-        incidentService.cancelIncident(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<IncidentResponseDTO> cancelIncident(
+            @PathVariable Long id,
+            @Valid @RequestBody IncidentActionRequestDTO body
+    ) {
+        return ResponseEntity.ok(
+                incidentService.cancelIncident(id, body.getComment())
+        );
     }
 
     //close
     @PreAuthorize("hasAnyRole('SUPERVISOR', 'ADMIN')")
     @PatchMapping("/{id}/close")
-    public ResponseEntity<Void> closeIncident(@PathVariable Long id) {
-        incidentService.closeIncident(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<IncidentResponseDTO> closeIncident(
+            @PathVariable Long id,
+            @Valid @RequestBody IncidentActionRequestDTO body
+    ) {
+        return ResponseEntity.ok(
+                incidentService.closeIncident(id, body.getComment())
+        );
     }
 
     @GetMapping("/{id}/timeline")
@@ -124,6 +144,16 @@ public class IncidentController {
            getIncidentsPaginated(@ParameterObject Pageable pageable) {
             return ResponseEntity.ok(
                    incidentService.getIncidentsPaginated(pageable)
+        );
+    }
+
+    @PostMapping("/{id}/annotations")
+    public ResponseEntity<IncidentTimelineResponseDTO> addAnnotation(
+            @PathVariable Long id,
+            @Valid @RequestBody AnnotationRequestDTO request
+    ) {
+        return ResponseEntity.ok(
+                incidentLogService.addAnnotation(id, request.getComment())
         );
     }
 
