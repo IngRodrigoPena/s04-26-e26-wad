@@ -16,7 +16,7 @@ export const localeNames: Record<Locale, string> = {
 interface I18nContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+  t: (key: string, vars?: Record<string, string | number>) => string;
   mounted: boolean;
 }
 
@@ -68,8 +68,14 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     setLocaleState(newLocale);
   };
 
-  const t = (key: string): string => {
-    return getNestedValue(messages[locale], key);
+  const t = (key: string, vars?: Record<string, string | number>): string => {
+    let value = getNestedValue(messages[locale], key);
+    if (vars) {
+      Object.entries(vars).forEach(([k, v]) => {
+        value = value.replace(`{${k}}`, String(v));
+      });
+    }
+    return value;
   };
 
   const value = {

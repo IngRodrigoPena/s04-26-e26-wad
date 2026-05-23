@@ -2,6 +2,8 @@
 
 import { useAuthStore } from "@/features/auth/stores/auth-store";
 import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,12 +30,15 @@ export function UserMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="relative h-9 w-9 rounded-full">
-          <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-medium">
-            {initials || <User className="h-4 w-4" />}
-          </div>
-        </Button>
+      <DropdownMenuTrigger
+        className={cn(
+          buttonVariants({ variant: "outline", size: "icon" }),
+          "relative h-9 w-9 cursor-pointer rounded-full",
+        )}
+      >
+        <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-medium">
+          {initials || <User className="h-4 w-4" />}
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="end">
           <DropdownMenuGroup>

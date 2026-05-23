@@ -1,7 +1,8 @@
 "use client";
 
 import { Globe } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,20 +22,26 @@ export function LanguageSwitcher() {
   // Prevent hydration mismatch
   if (!mounted) {
     return (
-      <Button variant="outline" size="icon" disabled>
+      <button
+        disabled
+        className={cn(buttonVariants({ variant: "outline", size: "icon" }))}
+      >
         <Globe className="h-[1.2rem] w-[1.2rem]" />
         <span className="sr-only">Loading language</span>
-      </Button>
+      </button>
     );
   }
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Globe className="h-[1.2rem] w-[1.2rem]" />
-          <span className="sr-only">{t("select")}</span>
-        </Button>
+      <DropdownMenuTrigger
+        className={cn(
+          buttonVariants({ variant: "outline", size: "icon" }),
+          "cursor-pointer",
+        )}
+      >
+        <Globe className="h-[1.2rem] w-[1.2rem]" />
+        <span className="sr-only">{t("select")}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {locales.map((loc) => (

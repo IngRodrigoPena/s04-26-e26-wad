@@ -10,12 +10,12 @@ import { useI18n, useTranslations, type Locale } from "@/components/providers/i1
 import { Button } from "@/components/ui/button";
 
 const TEST_USERS = [
-  { email: "admin@opscore.com", password: "abcd1234", role: "ADMIN", name: "Admin", color: "1" },
-  { email: "manager@opscore.com", password: "abcd1234", role: "MANAGER", name: "Manager", color: "2" },
-  { email: "supervisor@opscore.com", password: "abcd1234", role: "SUPERVISOR", name: "Supervisor", color: "3" },
-  { email: "technician@opscore.com", password: "abcd1234", role: "TECHNICIAN", name: "Técnico", color: "4" },
-  { email: "operator@opscore.com", password: "abcd1234", role: "OPERATOR", name: "Operador", color: "5" },
-  { email: "user@opscore.com", password: "abcd1234", role: "USUARIO", name: "Usuario", color: "6" },
+  { email: "admin@opscore.com", password: "abcd1234", role: "ADMIN", nameKey: "admin", color: "1" },
+  { email: "manager@opscore.com", password: "abcd1234", role: "MANAGER", nameKey: "manager", color: "2" },
+  { email: "supervisor@opscore.com", password: "abcd1234", role: "SUPERVISOR", nameKey: "supervisor", color: "3" },
+  { email: "technician@opscore.com", password: "abcd1234", role: "TECHNICIAN", nameKey: "technician", color: "4" },
+  { email: "operator@opscore.com", password: "abcd1234", role: "OPERATOR", nameKey: "operator", color: "5" },
+  { email: "user@opscore.com", password: "abcd1234", role: "USUARIO", nameKey: "user", color: "6" },
 ];
 
 const LANGUAGES: { code: Locale; label: string }[] = [
@@ -77,7 +77,7 @@ export default function LoginPage() {
           {/* Quick access */}
           <div className="mt-6 border-t border-border pt-4">
             <p className="mb-3 text-center text-xs text-muted-foreground">
-              Acceso rápido (1 click)
+              {t("quickAccess.title")}
             </p>
             <div className="grid grid-cols-2 gap-2">
               {TEST_USERS.map((u) => (
@@ -94,7 +94,7 @@ export default function LoginPage() {
                 >
                   <div className="flex items-center gap-1.5">
                     <User className="h-3.5 w-3.5" />
-                    <span className="font-semibold">{u.name}</span>
+                    <span className="font-semibold">{t(`quickAccess.${u.nameKey}`)}</span>
                   </div>
                   <span className="rounded-full border px-1.5 py-0 text-[10px]">
                     {u.role}

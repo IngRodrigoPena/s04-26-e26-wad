@@ -35,16 +35,17 @@ export interface UserResponseDTO {
 }
 
 export interface CreateUserRequestDTO {
-  username: string;
-  email: string;
-  password: string;
   firstName: string;
   lastName: string;
-  role: Role;
+  email: string;
+  password: string;
+  roleId: number;
+  areaId?: number | null;
+  avatar?: string | null;
 }
 
 export interface UpdateUserRoleDTO {
-  role: Role;
+  roleId: number;
 }
 
 export interface UpdateUserStatusDTO {

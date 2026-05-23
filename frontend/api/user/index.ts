@@ -24,6 +24,12 @@ export const usersApi = {
     return res;
   },
 
+  /** GET /users/{id} — requires ADMIN */
+  getById: async (id: number): Promise<UserResponseDTO> => {
+    const { data } = await apiClient.get(`/users/${id}`);
+    return data;
+  },
+
   /** GET /users — requires ADMIN */
   getAll: async (): Promise<UserResponseDTO[]> => {
     const { data } = await apiClient.get("/users");
