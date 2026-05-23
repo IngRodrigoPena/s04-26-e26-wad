@@ -83,7 +83,8 @@ public class OpscoreApiApplication {
 			Role userRole = roleRepository.findByName("USER")
 					.orElseGet(() -> {
 						Role role = new Role();
-						role.setName("USUARIO");
+						//role.setName("USUARIO");
+						role.setName("USER");
 						role.setDescription("Usuario");
 						return roleRepository.save(role);
 					});
