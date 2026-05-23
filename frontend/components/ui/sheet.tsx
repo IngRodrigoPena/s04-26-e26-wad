@@ -17,9 +17,11 @@ export function Sheet({ open, onOpenChange, children }: SheetProps) {
     <Drawer.Root open={open} onOpenChange={onOpenChange}>
       <Drawer.Portal>
         <Drawer.Backdrop className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
-        <Drawer.Popup className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-border bg-background shadow-xl data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full">
-          {children}
-        </Drawer.Popup>
+        <Drawer.Viewport>
+          <Drawer.Popup className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-border bg-background shadow-xl data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full">
+            {children}
+          </Drawer.Popup>
+        </Drawer.Viewport>
       </Drawer.Portal>
     </Drawer.Root>
   );
