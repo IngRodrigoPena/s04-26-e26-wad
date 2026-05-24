@@ -16,11 +16,11 @@ public interface IncidentService {
     List<IncidentResponseDTO> getAllIncidents();
     IncidentResponseDTO getIncidentById(Long id);
     List<AssignmentResponseDTO> getAssignmentHistory(Long incidentId);
-    void resolveIncident(Long incidentId);
-    void startIncident(Long incidentId);
-    void holdIncident(Long incidentId);
-    void cancelIncident(Long incidentId);
-    void closeIncident(Long incidentId);
+    IncidentResponseDTO resolveIncident(Long incidentId, String comment);
+    IncidentResponseDTO startIncident(Long incidentId, String comment);
+    IncidentResponseDTO holdIncident(Long incidentId, String comment);
+    IncidentResponseDTO cancelIncident(Long incidentId, String comment);
+    IncidentResponseDTO closeIncident(Long incidentId, String comment);
 
     List<IncidentResponseDTO> getFilteredIncidents(
             IncidentStatus status,

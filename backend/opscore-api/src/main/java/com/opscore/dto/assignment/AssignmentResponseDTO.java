@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class AssignmentResponseDTO {
+    private Long id;
+    private Long incidentId;
     private Long assignedToId;
     private String assignedToName;
     private Long assignedById;

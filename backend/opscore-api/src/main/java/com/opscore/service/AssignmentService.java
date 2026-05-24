@@ -95,7 +95,7 @@ public class AssignmentService {
                 incident,
                 assignedBy,
                 action,
-                "Incident assigned to " + assignedTo.getFirstName()
+                "Técnico " + assignedTo.getFirstName() + " " + assignedTo.getLastName() + " asignado por " + assignedBy.getFirstName()
         );
     }
 }

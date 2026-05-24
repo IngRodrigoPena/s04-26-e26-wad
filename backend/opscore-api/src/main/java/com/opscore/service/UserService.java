@@ -74,9 +74,54 @@ public class UserService {
                 .build();
     }
 
+    public UserResponseDTO getUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found")
+                );
+
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .role(user.getRole().getName())
+                .area(
+                        user.getArea() != null
+                                ? user.getArea().getName()
+                                : null
+                )
+                .isActive(user.isActive())
+                .avatar(user.getAvatar())
+                .build();
+    }
+
     public List<UserResponseDTO> getAllUsers() {
 
         return userRepository.findAll()
+                .stream()
+                .map(user -> UserResponseDTO.builder()
+                        .id(user.getId())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .email(user.getEmail())
+                        .role(user.getRole().getName())
+                        .area(
+                                user.getArea() != null
+                                        ? user.getArea().getName()
+                                        : null
+                        )
+                        .isActive(user.isActive())
+                        .avatar(user.getAvatar())
+                        .build()
+                )
+                .toList();
+    }
+
+    public List<UserResponseDTO> getAssignableUsers() {
+
+        return userRepository
+                .findByActiveTrueAndRoleNameIn(List.of("TECHNICIAN"))
                 .stream()
                 .map(user -> UserResponseDTO.builder()
                         .id(user.getId())
