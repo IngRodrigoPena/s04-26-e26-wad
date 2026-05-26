@@ -21,7 +21,7 @@ interface ConfigState {
 export const useConfigStore = create<ConfigState>()(
   persist(
     (set) => ({
-      apiBaseUrl: API_URLS.local,
+      apiBaseUrl: API_URLS.prod,
       setApiBaseUrl: (url) => set({ apiBaseUrl: normalizeApiUrl(url) }),
     }),
     {
@@ -47,5 +47,5 @@ export const getApiBaseUrl = (): string => {
   }
 
   const state = useConfigStore.getState();
-  return normalizeApiUrl(state.apiBaseUrl || API_URLS.local);
+  return normalizeApiUrl(state.apiBaseUrl || API_URLS.prod);
 };
