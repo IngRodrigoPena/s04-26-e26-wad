@@ -47,14 +47,15 @@
     "logout": "Sair",
     "search": "Pesquisar incidentes..."
   },
-  "dashboard": {
-    "welcome": "Bem-vindo {name}",
-    "description": "Painel de controle do sistema de gerenciamento de incidentes.",
-    "statsTitle": "Resumo Geral",
-    "incidentsOpen": "Incidentes Abertos",
-    "incidentsInProgress": "Em Progresso",
-    "incidentsResolved": "Resolvidos",
-    "incidentsTotal": "Total",
+   "dashboard": {
+     "welcome": "Bem-vindo {name}",
+     "description": "Painel de controle do sistema de gerenciamento de incidentes.",
+     "statsTitle": "Resumo Geral",
+     "incidentsOpen": "Incidentes Abertos",
+     "incidentsAssigned": "Incidentes Atribuídos",
+     "incidentsInProgress": "Em Progresso",
+     "incidentsResolved": "Resolvidos",
+     "incidentsTotal": "Total",
     "resolutionRate": "Taxa de Resolução",
     "quickActions": "Ações Rápidas",
     "createIncident": "Criar Incidente",
@@ -244,17 +245,18 @@
     "areaBreakdown": "Incidentes por Área",
     "areaDesc": "Distribuição de incidentes por área operacional"
   },
-  "incidents": {
-    "tabs": {
-      "all": "Todos",
-      "open": "Abertos",
-      "inProgress": "Em Andamento",
-      "onHold": "Em Espera",
-      "resolved": "Resolvidos",
-      "closed": "Fechados",
-      "canceled": "Cancelados",
-      "myIncidents": "Meus Incidentes"
-    },
+   "incidents": {
+     "tabs": {
+       "all": "Todos",
+       "open": "Abertos",
+       "assigned": "Atribuídos",
+       "inProgress": "Em Andamento",
+       "onHold": "Em Espera",
+       "resolved": "Resolvidos",
+       "closed": "Fechados",
+       "canceled": "Cancelados",
+       "myIncidents": "Meus Incidentes"
+     },
     "status": {
       "OPEN": "Aberto",
       "ASSIGNED": "Atribuído",

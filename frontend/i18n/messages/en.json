@@ -47,14 +47,15 @@
     "logout": "Logout",
     "search": "Search incidents..."
   },
-  "dashboard": {
-    "welcome": "Welcome {name}",
-    "description": "Incident Management System control panel.",
-    "statsTitle": "General Overview",
-    "incidentsOpen": "Open Incidents",
-    "incidentsInProgress": "In Progress",
-    "incidentsResolved": "Resolved",
-    "incidentsTotal": "Total",
+   "dashboard": {
+     "welcome": "Welcome {name}",
+     "description": "Incident Management System control panel.",
+     "statsTitle": "General Overview",
+     "incidentsOpen": "Open Incidents",
+     "incidentsAssigned": "Assigned Incidents",
+     "incidentsInProgress": "In Progress",
+     "incidentsResolved": "Resolved",
+     "incidentsTotal": "Total",
     "resolutionRate": "Resolution Rate",
     "quickActions": "Quick Actions",
     "createIncident": "Create Incident",
@@ -244,17 +245,18 @@
     "areaBreakdown": "Incidents by Area",
     "areaDesc": "Incident distribution by operational area"
   },
-  "incidents": {
-    "tabs": {
-      "all": "All",
-      "open": "Open",
-      "inProgress": "In Progress",
-      "onHold": "On Hold",
-      "resolved": "Resolved",
-      "closed": "Closed",
-      "canceled": "Canceled",
-      "myIncidents": "My Incidents"
-    },
+   "incidents": {
+     "tabs": {
+       "all": "All",
+       "open": "Open",
+       "assigned": "Assigned",
+       "inProgress": "In Progress",
+       "onHold": "On Hold",
+       "resolved": "Resolved",
+       "closed": "Closed",
+       "canceled": "Canceled",
+       "myIncidents": "My Incidents"
+     },
     "status": {
       "OPEN": "Open",
       "ASSIGNED": "Assigned",
