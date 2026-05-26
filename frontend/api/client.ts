@@ -8,7 +8,7 @@ import axios, {
 import { getApiBaseUrl } from "@/stores/config-store";
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://opscoreapi.onrender.com",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
