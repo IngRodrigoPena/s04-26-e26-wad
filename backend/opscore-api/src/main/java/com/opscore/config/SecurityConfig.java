@@ -31,19 +31,16 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
-
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPoint))
-
-
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**",
-
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
-                                        "/swagger-ui.html"
+                                        "/swagger-ui.html",
+                                        "/health"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
