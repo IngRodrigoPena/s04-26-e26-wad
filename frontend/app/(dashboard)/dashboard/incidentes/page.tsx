@@ -76,14 +76,15 @@ export default function IncidentsPage() {
   const stats = visibleIncidents.reduce(
     (acc, inc) => {
       acc.total++;
-      if (inc.status === "OPEN" || inc.status === "ASSIGNED") acc.open++;
+      if (inc.status === "OPEN") acc.open++;
+      if (inc.status === "ASSIGNED") acc.assigned++;
       if (inc.status === "IN_PROGRESS") acc.inProgress++;
       if (inc.status === "ON_HOLD") acc.onHold++;
       if (inc.status === "RESOLVED") acc.resolved++;
       if (inc.status === "CLOSED" || inc.status === "CANCELED") acc.closed++;
       return acc;
     },
-    { total: 0, open: 0, inProgress: 0, onHold: 0, resolved: 0, closed: 0 },
+    { total: 0, open: 0, assigned: 0, inProgress: 0, onHold: 0, resolved: 0, closed: 0 },
   );
 
   // ── Seed test data ──────────────────────────
@@ -222,7 +223,7 @@ export default function IncidentsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {[
           {
             key: "total",
@@ -234,11 +235,19 @@ export default function IncidentsPage() {
           },
           {
             key: "open",
-            label: "dashboard.incidentsOpen",
+            label: "incidents.tabs.open",
             value: stats.open,
             icon: AlertTriangle,
             color: "text-destructive",
             border: "border-l-destructive",
+          },
+          {
+            key: "assigned",
+            label: "incidents.tabs.assigned",
+            value: stats.assigned,
+            icon: User,
+            color: "text-purple-500",
+            border: "border-l-purple-500",
           },
           {
             key: "inProgress",
@@ -294,15 +303,24 @@ export default function IncidentsPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7">
           {/* Columna: Abiertos */}
           <BoardColumn
             title={t("incidents.tabs.open")}
-            count={stats.open}
-            incidents={visibleIncidents.filter((i) => i.status === "OPEN" || i.status === "ASSIGNED")}
+            count={visibleIncidents.filter((i) => i.status === "OPEN").length}
+            incidents={visibleIncidents.filter((i) => i.status === "OPEN")}
             color="border-l-destructive"
             headerBg="bg-destructive/10"
             headerText="text-destructive"
+          />
+          {/* Columna: Asignados */}
+          <BoardColumn
+            title={t("incidents.tabs.assigned") || "Asignado"}
+            count={visibleIncidents.filter((i) => i.status === "ASSIGNED").length}
+            incidents={visibleIncidents.filter((i) => i.status === "ASSIGNED")}
+            color="border-l-purple-500"
+            headerBg="bg-purple-500/10"
+            headerText="text-purple-500"
           />
           {/* Columna: En Progreso */}
           <BoardColumn
