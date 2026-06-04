@@ -19,6 +19,9 @@ public class IncidentRequestDTO {
     @Size(min = 10,max = 500, message = "Description must be less than 500 characters")
     private String description;
 
+    @NotNull(message = "Category is required")
+    private Category category;
+
     @NotNull(message = "Type is required")
     private IncidentType type;
 
@@ -26,17 +29,9 @@ public class IncidentRequestDTO {
     private Priority priority;
 
     private Boolean isFalseAlarm;
-
     private Long areaId;
-
     private Long reportedById;
-
     private Long assignedToId;
-
     private Long supervisorId;
-
-    /*@NotNull(message = "Category is required")
-    private Category category;*/
-
 }
 

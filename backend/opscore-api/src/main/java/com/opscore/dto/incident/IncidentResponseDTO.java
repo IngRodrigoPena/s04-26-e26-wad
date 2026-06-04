@@ -14,14 +14,7 @@ public class IncidentResponseDTO {
     private Long id;
     private String title;
     private String description;
-
-    private IncidentType type;
-    private IncidentStatus status;
-    private Priority priority;
-    private Boolean isFalseAlarm;
-
-    private Long areaId;
-    private String areaName;
+    private Category category;
 
     private Long reportedById;
     private String reportedByName;
@@ -32,9 +25,22 @@ public class IncidentResponseDTO {
     private Long supervisorId;
     private String supervisorName;
 
-//  private Category category;
+    private Long resolvedById;
+    private String resolvedByName;
+
+    private Long updatedById;
+    private String updatedByName;
+
+    private IncidentType type;
+    private IncidentStatus status;
+    private Priority priority;
+    private Boolean isFalseAlarm;
+
+    private Long areaId;
+    private String areaName;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    //private LocalDateTime resolvedAt;
+    private LocalDateTime resolvedAt;
 }
 

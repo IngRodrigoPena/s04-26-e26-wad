@@ -22,7 +22,7 @@ public class AssignmentController {
         this.incidentService = incidentService;
     }
 
-    //@PreAuthorize("hasRole('SUPERVISOR')")
+
     @PreAuthorize("hasAnyRole('SUPERVISOR', 'ADMIN')")
     @PostMapping("/{id}/assign")
     public ResponseEntity<IncidentResponseDTO> assignIncident(

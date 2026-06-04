@@ -44,7 +44,7 @@ public class OpscoreApiApplication {
 					.orElseGet(() -> {
 						Role role = new Role();
 						role.setName("ADMIN");
-						role.setDescription("System administrator");
+						role.setDescription("System Administrator");
 						return roleRepository.save(role);
 					});
 
@@ -52,7 +52,7 @@ public class OpscoreApiApplication {
 					.orElseGet(() -> {
 						Role role = new Role();
 						role.setName("MANAGER");
-						role.setDescription("System manager");
+						role.setDescription("System Manager");
 						return roleRepository.save(role);
 					});
 
@@ -125,7 +125,7 @@ public class OpscoreApiApplication {
 
 			if (!userRepository.existsByEmail("admin@opscore.com")) {
 				User admin = User.builder()
-						.firstName("System")
+						.firstName("Pedro")
 						.lastName("Admin")
 						.email("admin@opscore.com")
 						.password(passwordEncoder.encode("abcd1234"))
@@ -142,7 +142,7 @@ public class OpscoreApiApplication {
 
 			if (!userRepository.existsByEmail("manager@opscore.com")) {
 				User manager = User.builder()
-						.firstName("System")
+						.firstName("Juan")
 						.lastName("Manager")
 						.email("manager@opscore.com")
 						.password(passwordEncoder.encode("abcd1234"))
@@ -160,7 +160,7 @@ public class OpscoreApiApplication {
 			if (!userRepository.existsByEmail("supervisor@opscore.com")) {
 
 				User supervisor = User.builder()
-						.firstName("System")
+						.firstName("Julio")
 						.lastName("Supervisor")
 						.email("supervisor@opscore.com")
 						.password(passwordEncoder.encode("abcd1234"))
@@ -177,8 +177,8 @@ public class OpscoreApiApplication {
 			if (!userRepository.existsByEmail("technician@opscore.com")) {
 
 				User technician = User.builder()
-						.firstName("System")
-						.lastName("technician")
+						.firstName("Octavio")
+						.lastName("Tecnico")
 						.email("technician@opscore.com")
 						.password(passwordEncoder.encode("abcd1234"))
 						.role(technicianRole)
@@ -194,8 +194,8 @@ public class OpscoreApiApplication {
 			if (!userRepository.existsByEmail("operator@opscore.com")) {
 
 				User operator = User.builder()
-						.firstName("System")
-						.lastName("Operator")
+						.firstName("Hector")
+						.lastName("Operador")
 						.email("operator@opscore.com")
 						.password(passwordEncoder.encode("abcd1234"))
 						.role(operatorRole)
@@ -211,8 +211,8 @@ public class OpscoreApiApplication {
 			if (!userRepository.existsByEmail("user@opscore.com")) {
 
 				User user = User.builder()
-						.firstName("System")
-						.lastName("user")
+						.firstName("Ivan")
+						.lastName("usuario")
 						.email("user@opscore.com")
 						.password(passwordEncoder.encode("abcd1234"))
 						.role(userRole)

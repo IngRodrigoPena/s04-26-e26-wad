@@ -36,12 +36,9 @@ public class Incident {
     @Column(length = 1000)
     private String description;
 
-    /*@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Category category;*/
-
-    @Column(length = 100)
-    private String category;
+    private Category category;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -62,6 +59,7 @@ public class Incident {
     @JoinColumn(name = "area_id")
     private Area area;
 
+
     @ManyToOne
     @JoinColumn(name = "reported_by")
     private User reportedBy;
@@ -74,6 +72,17 @@ public class Incident {
     @JoinColumn(name = "supervisor_id")
     private User supervisor;
 
+   // private String updatedBy;
+   // private String resolvedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "resolved_by")
+    private User resolvedBy;
+    @ManyToOne
+    @JoinColumn(name = "updated_by")
+    private User updatedBy;
+
+
     // Auditoría
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -82,8 +91,7 @@ public class Incident {
     @LastModifiedDate
     private LocalDateTime updatedAt;
     private LocalDateTime resolvedAt;
-    private String updatedBy;
-    private String resolvedBy;
+
 
     //IncidentLog
     @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL)

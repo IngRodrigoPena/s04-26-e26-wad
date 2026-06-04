@@ -102,6 +102,7 @@ public class IncidentServiceImpl implements IncidentService {
         Incident incident = Incident.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
+                .category(request.getCategory())
                 .priority(request.getPriority())
                 .type(request.getType())
                 .status(IncidentStatus.OPEN)
@@ -135,6 +136,9 @@ public class IncidentServiceImpl implements IncidentService {
         dto.setId(incident.getId());
         dto.setTitle(incident.getTitle());
         dto.setDescription(incident.getDescription());
+
+        dto.setCategory(incident.getCategory());
+
         dto.setStatus(incident.getStatus());
         dto.setPriority(incident.getPriority());
 
@@ -167,8 +171,24 @@ public class IncidentServiceImpl implements IncidentService {
             );
         }
 
+        if (incident.getResolvedBy() != null) {
+            dto.setResolvedById(
+                    incident.getResolvedBy().getId());
+            dto.setResolvedByName(
+                    incident.getResolvedBy().getFirstName());
+        }
+
+        if (incident.getUpdatedBy() != null) {
+            dto.setUpdatedById(
+                    incident.getUpdatedBy().getId());
+            dto.setUpdatedByName(
+                    incident.getUpdatedBy().getFirstName());
+        }
+
         dto.setCreatedAt(incident.getCreatedAt());
         dto.setUpdatedAt(incident.getUpdatedAt());
+        dto.setResolvedAt(incident.getResolvedAt());
+
         return dto;
     }
 
@@ -229,8 +249,8 @@ public class IncidentServiceImpl implements IncidentService {
 
         incident.setStatus(IncidentStatus.RESOLVED);
         incident.setResolvedAt(LocalDateTime.now());
-        incident.setResolvedBy(SecurityUtils.getCurrentUserEmail());
-        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
+        incident.setResolvedBy(currentUser);
+        incident.setUpdatedBy(currentUser);
 
         Incident updatedIncident = incidentRepository.save(incident);
 
@@ -259,7 +279,7 @@ public class IncidentServiceImpl implements IncidentService {
 
         User currentUser = getCurrentAuthenticatedUser();
         incident.setStatus(IncidentStatus.IN_PROGRESS);
-        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
+        incident.setUpdatedBy(currentUser);
 
         Incident updatedIncident = incidentRepository.save(incident);
 
@@ -287,7 +307,7 @@ public class IncidentServiceImpl implements IncidentService {
         User currentUser = getCurrentAuthenticatedUser();
 
         incident.setStatus(IncidentStatus.ON_HOLD);
-        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
+        incident.setUpdatedBy(currentUser);
 
         Incident updatedIncident = incidentRepository.save(incident);
 
@@ -318,7 +338,7 @@ public class IncidentServiceImpl implements IncidentService {
         User currentUser = getCurrentAuthenticatedUser();
 
         incident.setStatus(IncidentStatus.CANCELED);
-        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
+        incident.setUpdatedBy(currentUser);
 
 
         Incident updatedIncident = incidentRepository.save(incident);
@@ -347,7 +367,7 @@ public class IncidentServiceImpl implements IncidentService {
         User currentUser = getCurrentAuthenticatedUser();
 
         incident.setStatus(IncidentStatus.CLOSED);
-        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
+        incident.setUpdatedBy(currentUser);
 
         Incident updatedIncident = incidentRepository.save(incident);
 

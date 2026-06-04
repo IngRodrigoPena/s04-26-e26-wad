@@ -85,7 +85,8 @@ public class AssignmentService {
         incident.setAssignedTo(assignedTo);
         incident.setSupervisor(assignedBy);
         incident.setStatus(IncidentStatus.ASSIGNED);
-        incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
+        //incident.setUpdatedBy(SecurityUtils.getCurrentUserEmail());
+        incident.setUpdatedBy(assignedBy);
         //guarda incidente
         Incident updatedIncident = incidentRepository.save(incident);
         // Guardar assignment
